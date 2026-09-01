@@ -31,36 +31,38 @@ export default function PipelinePage() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-3xl font-bold mb-2">Reconciliation Pipeline</h1>
-      <p className="text-gray-400 mb-8">
+      <h1 className="text-3xl font-black text-black uppercase tracking-tight mb-3">Reconciliation Pipeline</h1>
+      <p className="text-black bg-accent px-2 py-1 font-bold inline-block mb-10 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
         Concurrent DAG with 5 phases and crash recovery checkpoints
       </p>
 
-      <button
-        onClick={start}
-        disabled={running}
-        className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium disabled:opacity-50 mb-8"
-      >
-        {running ? "Running..." : "Start Pipeline"}
-      </button>
+      <div>
+        <button
+          onClick={start}
+          disabled={running}
+          className="px-6 py-3 bg-black hover:bg-accent hover:text-black text-white rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-1 hover:translate-x-1 font-bold disabled:opacity-50 transition-all mb-10 uppercase tracking-widest"
+        >
+          {running ? "Running..." : "Start Pipeline"}
+        </button>
+      </div>
 
-      <div className="space-y-4">
+      <div className="space-y-5">
         {PHASES.map((phase) => (
-          <div key={phase.name} className="bg-gray-900 rounded-lg p-4 border border-gray-800">
-            <div className="flex items-center justify-between mb-2">
+          <div key={phase.name} className="bg-white rounded-none p-4 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="font-medium text-sm">Phase {PHASES.indexOf(phase) + 1}: {phase.name}</p>
-                <p className="text-xs text-gray-500">{phase.desc}</p>
+                <p className="font-bold text-black uppercase tracking-wide text-sm">Phase {PHASES.indexOf(phase) + 1}: {phase.name}</p>
+                <p className="text-xs text-gray-600 font-medium mt-1">{phase.desc}</p>
               </div>
-              <span className="text-sm text-gray-400">
+              <span className="text-sm font-mono font-bold text-black bg-gray-100 px-2 py-1 border border-black">
                 {progress[phase.name] !== undefined
                   ? `${progress[phase.name]}%`
                   : running ? "0%" : "--"}
               </span>
             </div>
-            <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+            <div className="h-3 bg-gray-200 border-2 border-black rounded-none overflow-hidden relative">
               <div
-                className="h-full bg-indigo-500 rounded-full transition-all duration-500"
+                className="h-full bg-accent border-r-2 border-black transition-all duration-500 absolute top-0 left-0"
                 style={{
                   width: `${progress[phase.name] || 0}%`,
                 }}
@@ -71,22 +73,22 @@ export default function PipelinePage() {
       </div>
 
       {done && (
-        <div className="mt-8 p-6 bg-gray-900 rounded-xl border border-gray-800">
-          <p className="font-semibold text-green-400 mb-3">
+        <div className="mt-10 p-6 bg-white rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <p className="font-bold text-black bg-green-400 inline-block px-2 py-1 border-2 border-black mb-5 uppercase tracking-wide text-sm">
             Complete! Match rate: {(done.match_rate * 100).toFixed(1)}% | Duration: {done.duration_ms?.toFixed(0)}ms
           </p>
-          <div className="grid grid-cols-3 gap-4 text-sm">
-            <div>
-              <p className="text-gray-500">Matches</p>
-              <p className="text-xl font-bold text-indigo-400">{done.total_matches}</p>
+          <div className="grid grid-cols-3 gap-6 text-sm">
+            <div className="border-t-4 border-green-500 pt-2">
+              <p className="text-black font-bold uppercase tracking-wider text-xs">Matches</p>
+              <p className="text-2xl font-black text-black">{done.total_matches}</p>
             </div>
-            <div>
-              <p className="text-gray-500">Exceptions</p>
-              <p className="text-xl font-bold text-yellow-400">{done.total_exceptions}</p>
+            <div className="border-t-4 border-yellow-500 pt-2">
+              <p className="text-black font-bold uppercase tracking-wider text-xs">Exceptions</p>
+              <p className="text-2xl font-black text-black">{done.total_exceptions}</p>
             </div>
-            <div>
-              <p className="text-gray-500">Rejected</p>
-              <p className="text-xl font-bold text-red-400">{done.total_rejected}</p>
+            <div className="border-t-4 border-red-500 pt-2">
+              <p className="text-black font-bold uppercase tracking-wider text-xs">Rejected</p>
+              <p className="text-2xl font-black text-black">{done.total_rejected}</p>
             </div>
           </div>
         </div>
