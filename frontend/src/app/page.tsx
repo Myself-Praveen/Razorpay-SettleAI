@@ -155,8 +155,8 @@ export default function LandingPage() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="inline-flex items-center justify-center mb-8"
           >
-            <Badge variant="secondary" className="px-3 py-1.5 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/20 transition-colors">
-              <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse mr-2" />
+            <Badge variant="secondary" className="px-3 py-1.5 bg-black hover:bg-black text-white rounded-none border-2 border-black transition-colors font-bold uppercase tracking-wider text-xs">
+              <span className="w-2 h-2 rounded-none bg-accent animate-pulse mr-2" />
               Razorpay Buildathon 2026 -- AI Finance Controller
             </Badge>
           </motion.div>
@@ -169,7 +169,7 @@ export default function LandingPage() {
           >
             Close the books
             <br />
-            <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-indigo-300 bg-clip-text text-transparent">
+            <span className="bg-accent text-black px-2 mt-2 inline-block">
               with confidence.
             </span>
           </motion.h1>
@@ -191,10 +191,10 @@ export default function LandingPage() {
             transition={{ duration: 0.6, delay: 0.6 }}
             className="flex items-center justify-center gap-4"
           >
-            <Link href="/pipeline" className="inline-flex items-center justify-center rounded-lg border border-transparent h-9 px-2.5 text-sm font-medium bg-indigo-600 hover:bg-indigo-500 text-white shadow-[0_0_30px_rgba(99,102,241,0.2)] hover:shadow-[0_0_40px_rgba(99,102,241,0.4)] transition-all">
+            <Link href="/pipeline" className="inline-flex items-center justify-center rounded-none border-2 border-black h-10 px-4 text-sm font-bold bg-black hover:bg-accent hover:text-black text-white transition-all">
               Launch Pipeline
             </Link>
-            <a href="https://github.com/Myself-Praveen/Razorpay-SettleAI" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center rounded-lg border border-border bg-background/50 backdrop-blur-sm hover:bg-muted h-9 px-2.5 text-sm font-medium transition-all gap-2">
+            <a href="https://github.com/Myself-Praveen/Razorpay-SettleAI" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center rounded-none border-2 border-black bg-white hover:bg-gray-100 h-10 px-4 text-sm font-bold text-black transition-all gap-2">
               <Code className="w-4 h-4" />
               Source Code
             </a>
@@ -223,7 +223,7 @@ export default function LandingPage() {
       <section id="features" className="py-24 px-6 bg-background">
         <div className="max-w-6xl mx-auto">
           <FadeInSection className="text-center mb-16">
-            <p className="text-indigo-400 text-[13px] font-medium tracking-wide uppercase mb-3">
+            <p className="text-black bg-accent inline-block px-2 py-0.5 text-[13px] font-bold tracking-wide uppercase mb-3">
               Capabilities
             </p>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
@@ -239,12 +239,12 @@ export default function LandingPage() {
             {features.map((feature, i) => (
               <FadeInSection key={feature.title} delay={i * 0.08}>
                 <Link href={feature.href} className="block group outline-none h-full">
-                  <Card className="h-full bg-card border-border hover:bg-accent hover:border-indigo-500/30 transition-all duration-300">
+                  <Card className="h-full bg-white border-2 border-black rounded-none hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-200">
                     <CardContent className="p-6">
-                      <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-4 group-hover:bg-indigo-500/20 group-hover:scale-110 transition-all duration-300">
+                      <div className="w-10 h-10 border-2 border-black bg-accent flex items-center justify-center text-black mb-4 group-hover:bg-black group-hover:text-white transition-all duration-200">
                         {feature.icon}
                       </div>
-                      <h3 className="text-[15px] font-semibold mb-2 text-card-foreground group-hover:text-indigo-400 transition-colors">
+                      <h3 className="text-[15px] font-bold mb-2 text-black transition-colors">
                         {feature.title}
                       </h3>
                       <p className="text-[13px] text-muted-foreground leading-relaxed">
@@ -262,7 +262,7 @@ export default function LandingPage() {
       <section id="how-it-works" className="py-24 px-6 border-t border-border bg-card">
         <div className="max-w-4xl mx-auto">
           <FadeInSection className="text-center mb-16">
-            <p className="text-indigo-400 text-[13px] font-medium tracking-wide uppercase mb-3">
+            <p className="text-black bg-accent inline-block px-2 py-0.5 text-[13px] font-bold tracking-wide uppercase mb-3">
               Pipeline
             </p>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 text-card-foreground">
@@ -277,8 +277,8 @@ export default function LandingPage() {
           <div className="space-y-1">
             {steps.map((step, i) => (
               <FadeInSection key={step.number} delay={i * 0.1}>
-                <div className="flex gap-6 p-6 rounded-xl border border-transparent hover:border-border hover:bg-accent transition-all duration-300">
-                  <div className="text-2xl font-bold text-indigo-500/40 font-mono shrink-0 w-12">
+                <div className="flex gap-6 p-6 border-b-2 border-transparent hover:border-black hover:bg-accent/10 transition-all duration-200">
+                  <div className="text-2xl font-bold text-black font-mono shrink-0 w-12">
                     {step.number}
                   </div>
                   <div>

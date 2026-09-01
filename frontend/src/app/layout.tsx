@@ -22,10 +22,10 @@ const NAV_ITEMS = [
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={cn("dark font-sans antialiased", GeistSans.variable, GeistMono.variable)}>
+    <html lang="en" className={cn("font-sans antialiased", GeistSans.variable, GeistMono.variable)}>
       <body className="bg-background text-foreground">
         <div className="flex min-h-screen">
-          <nav className="w-56 bg-[#0c0c12] border-r border-border p-4 flex flex-col">
+          <nav className="w-56 bg-background border-r-2 border-border p-4 flex flex-col">
             <div className="mb-8">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center overflow-hidden">
@@ -40,7 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <a
                   key={item.href}
                   href={item.href}
-                  className="block px-3 py-1.5 rounded-md text-[13px] text-muted-foreground hover:bg-white/[0.05] hover:text-foreground transition-colors"
+                  className="block px-3 py-1.5 rounded-none border border-transparent text-[13px] text-muted-foreground hover:bg-black hover:text-white hover:border-black transition-colors font-medium"
                 >
                   {item.label}
                 </a>

@@ -50,20 +50,20 @@ export default function ExceptionsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   onClick={() => setSelected(exc)}
-                  className={`w-full text-left p-4 rounded-xl border transition-all duration-200 outline-none ${
+                  className={`w-full text-left p-4 rounded-none border-2 transition-all duration-200 outline-none ${
                     selected?.exception_id === exc.exception_id
-                      ? "border-primary bg-primary/10 shadow-sm"
-                      : "border-border bg-card hover:bg-accent/50 hover:border-primary/30"
+                      ? "border-black bg-accent text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] -translate-y-1"
+                      : "border-black bg-white hover:bg-gray-100 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-mono font-medium text-foreground truncate max-w-[180px]">
                       {exc.exception_id}
                     </span>
-                    <Badge variant="secondary" className={`text-[10px] uppercase font-bold tracking-wider ${
+                    <Badge variant="secondary" className={`text-[10px] uppercase font-bold tracking-wider rounded-none border-2 border-black ${
                       exc.confidence_level === "high"
-                        ? "bg-green-500/10 text-green-500 hover:bg-green-500/20"
-                        : "bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20"
+                        ? "bg-green-500 text-white hover:bg-green-600"
+                        : "bg-accent text-black hover:bg-accent"
                     }`}>
                       {exc.confidence_level}
                     </Badge>
@@ -121,13 +121,13 @@ export default function ExceptionsPage() {
                           </div>
                           <div className="flex justify-between items-center py-2 border-b border-border/50">
                             <span className="text-muted-foreground">Exception Code</span>
-                            <Badge variant="outline" className="font-semibold text-yellow-500 border-yellow-500/30 bg-yellow-500/10">
+                            <Badge variant="outline" className="font-bold text-black border-2 border-black bg-accent rounded-none">
                               {selected.exception_code}
                             </Badge>
                           </div>
                           <div className="pt-3">
                             <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wider font-semibold">Raw Context</p>
-                            <pre className="bg-muted p-4 rounded-lg text-xs font-mono text-muted-foreground overflow-x-auto border border-border/50">
+                            <pre className="bg-gray-100 p-4 rounded-none text-xs font-mono text-black overflow-x-auto border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                               {JSON.stringify(selected, null, 2)}
                             </pre>
                           </div>
@@ -136,10 +136,9 @@ export default function ExceptionsPage() {
                     </div>
 
                     <div className="flex-1 space-y-6">
-                      <div className="bg-indigo-500/5 rounded-xl p-5 border border-indigo-500/20 shadow-sm relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
+                      <div className="bg-white rounded-none p-5 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden">
                         
-                        <h3 className="text-sm font-semibold text-indigo-400 mb-5 flex items-center gap-2">
+                        <h3 className="text-sm font-bold text-black mb-5 flex items-center gap-2 uppercase tracking-wide">
                           <CpuIcon className="w-4 h-4" />
                           AI Auditor Hypothesis
                         </h3>
@@ -147,39 +146,39 @@ export default function ExceptionsPage() {
                         <div className="space-y-5 text-sm relative z-10">
                           <div>
                             <p className="text-[11px] text-muted-foreground mb-1.5 uppercase tracking-wider font-semibold">Detected Discrepancy</p>
-                            <div className="bg-background/80 backdrop-blur border border-red-500/20 text-foreground p-3.5 rounded-lg leading-relaxed shadow-sm">
+                            <div className="bg-white border-2 border-black border-l-8 border-l-red-500 text-black p-3.5 rounded-none leading-relaxed shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                               {selected.hypothesis}
                             </div>
                           </div>
                           <div>
                             <p className="text-[11px] text-muted-foreground mb-1.5 uppercase tracking-wider font-semibold">Suggested Resolution</p>
-                            <div className="bg-background/80 backdrop-blur border border-green-500/20 text-foreground p-3.5 rounded-lg leading-relaxed shadow-sm">
+                            <div className="bg-white border-2 border-black border-l-8 border-l-green-500 text-black p-3.5 rounded-none leading-relaxed shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                               {selected.suggested_resolution}
                             </div>
                           </div>
                         </div>
 
-                        <div className="mt-8 pt-5 border-t border-indigo-500/20 relative z-10">
-                          <p className="text-xs text-indigo-400/80 mb-3 font-medium">Human-In-The-Loop (HITL) Action</p>
+                        <div className="mt-8 pt-5 border-t-2 border-black relative z-10">
+                          <p className="text-xs bg-accent text-black inline-block px-1 py-0.5 mb-3 font-bold uppercase">Human-In-The-Loop Action</p>
                           <div className="flex gap-3">
                             <Button
                               onClick={() => handleResolve("accepted_as_is")}
-                              className="flex-1 bg-green-600 hover:bg-green-500 text-white shadow-[0_0_20px_rgba(22,163,74,0.15)] hover:shadow-[0_0_25px_rgba(22,163,74,0.3)] transition-all gap-2"
+                              className="flex-1 bg-green-500 hover:bg-green-400 text-black font-bold rounded-none border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-[2px] hover:translate-x-[2px] transition-all gap-2"
                             >
                               <CheckCircle2 className="w-4 h-4" />
-                              Accept AI Hypothesis
+                              Accept Hypothesis
                             </Button>
                             <Button
                               onClick={() => handleResolve("manual_override")}
                               variant="destructive"
-                              className="flex-1 shadow-[0_0_20px_rgba(220,38,38,0.15)] hover:shadow-[0_0_25px_rgba(220,38,38,0.3)] transition-all gap-2"
+                              className="flex-1 bg-red-500 hover:bg-red-400 text-white font-bold rounded-none border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-[2px] hover:translate-x-[2px] transition-all gap-2"
                             >
                               <XCircle className="w-4 h-4" />
                               Reject & Override
                             </Button>
                           </div>
-                          <p className="text-[10px] text-muted-foreground mt-3 text-center">
-                            Actions update <code className="font-mono text-indigo-400 bg-indigo-400/10 px-1 py-0.5 rounded">few_shot_memory.json</code> to train future runs.
+                          <p className="text-[10px] text-muted-foreground mt-4 text-center font-medium">
+                            Actions update <code className="font-mono text-black bg-gray-200 px-1 border border-black py-0.5">few_shot_memory.json</code> to train future runs.
                           </p>
                         </div>
                       </div>
@@ -193,11 +192,11 @@ export default function ExceptionsPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="h-full flex items-center justify-center border-2 border-dashed border-border rounded-xl bg-card/50"
+              className="h-full flex items-center justify-center border-2 border-dashed border-black rounded-none bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
             >
               <div className="text-center">
-                <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto mb-4 border border-border shadow-sm">
-                  <AlertCircle className="w-8 h-8 text-muted-foreground" />
+                <div className="w-16 h-16 bg-accent rounded-none flex items-center justify-center mx-auto mb-4 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <AlertCircle className="w-8 h-8 text-black" />
                 </div>
                 <h3 className="text-lg font-medium text-foreground mb-1">No Exception Selected</h3>
                 <p className="text-sm text-muted-foreground">Select an exception from the explorer to view its analysis.</p>

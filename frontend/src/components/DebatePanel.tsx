@@ -8,13 +8,13 @@ export function DebatePanel({ debateResult }: { debateResult: any }) {
   if (!debateResult) return null;
 
   return (
-    <Card className="mt-6 bg-card border-border overflow-hidden shadow-lg">
-      <CardHeader className="bg-indigo-500/5 px-4 py-3 border-b border-border flex flex-row justify-between items-center space-y-0">
-        <CardTitle className="text-sm font-semibold text-indigo-400 flex items-center gap-2">
+    <Card className="mt-6 bg-white border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <CardHeader className="bg-black px-4 py-3 border-b-2 border-black flex flex-row justify-between items-center space-y-0">
+        <CardTitle className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-wide">
           <Scale className="w-4 h-4" />
           AI Confidence Debate (Phase 3.5)
         </CardTitle>
-        <Badge variant="secondary" className="font-mono text-xs text-indigo-400 bg-indigo-500/10 hover:bg-indigo-500/20">
+        <Badge variant="secondary" className="font-mono text-xs text-black bg-accent rounded-none border-0 hover:bg-accent">
           {debateResult.match_id}
         </Badge>
       </CardHeader>
@@ -30,7 +30,7 @@ export function DebatePanel({ debateResult }: { debateResult: any }) {
             <User className="w-3.5 h-3.5" />
             Merchant Agent
           </div>
-          <div className="bg-muted text-foreground p-3.5 rounded-2xl rounded-tl-sm text-[13px] leading-relaxed border border-border/50 shadow-sm">
+          <div className="bg-white text-black p-3.5 rounded-none text-[13px] leading-relaxed border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             {debateResult.merchant_argument}
           </div>
         </motion.div>
@@ -45,7 +45,7 @@ export function DebatePanel({ debateResult }: { debateResult: any }) {
             Auditor Agent
             <Cpu className="w-3.5 h-3.5" />
           </div>
-          <div className="bg-indigo-500/10 text-indigo-100 p-3.5 rounded-2xl rounded-tr-sm text-[13px] leading-relaxed border border-indigo-500/20 shadow-sm">
+          <div className="bg-gray-100 text-black p-3.5 rounded-none text-[13px] leading-relaxed border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             {debateResult.auditor_argument}
           </div>
         </motion.div>
@@ -65,7 +65,7 @@ export function DebatePanel({ debateResult }: { debateResult: any }) {
             {debateResult.synthesis_reasoning}
           </p>
           
-          <div className="flex gap-6 items-center p-3 rounded-lg bg-background/50 border border-border">
+          <div className="flex gap-6 items-center p-3 rounded-none bg-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-center">
               <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Initial</div>
               <div className="font-mono text-sm text-yellow-500">{debateResult.initial_confidence.toFixed(2)}</div>
@@ -77,14 +77,14 @@ export function DebatePanel({ debateResult }: { debateResult: any }) {
             
             <div className="text-center">
               <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Adjusted</div>
-              <div className="font-mono text-sm text-indigo-400">{debateResult.adjusted_confidence.toFixed(2)}</div>
+              <div className="font-mono text-sm text-black font-bold">{debateResult.adjusted_confidence.toFixed(2)}</div>
             </div>
             
             <div className="w-px h-8 bg-border mx-2" />
             
             <div className="text-center">
               <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Verdict</div>
-              <Badge variant="outline" className={`text-xs ${debateResult.verdict === 'MATCH' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
+              <Badge variant="outline" className={`text-xs font-bold rounded-none border-2 ${debateResult.verdict === 'MATCH' ? 'bg-green-500 text-white border-black' : 'bg-red-500 text-white border-black'}`}>
                 {debateResult.verdict}
               </Badge>
             </div>
