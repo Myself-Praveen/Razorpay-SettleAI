@@ -1,0 +1,10 @@
+node_modules/
+venv/
+__pycache__/
+*.pyc
+.env
+.pytest_cache/
+output/
+data/
+.next/
+remove_emojis.py
