@@ -28,8 +28,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <nav className="w-56 bg-[#0c0c12] border-r border-border p-4 flex flex-col">
             <div className="mb-8">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-md bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-[10px] font-bold">
-                  S
+                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center overflow-hidden">
+                  <img src="/logo.png" alt="SettleAI Logo" className="w-full h-full object-cover" />
                 </div>
                 <h1 className="text-[15px] font-semibold tracking-tight">SettleAI</h1>
               </div>

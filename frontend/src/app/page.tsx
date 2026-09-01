@@ -125,8 +125,8 @@ export default function LandingPage() {
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-xs font-bold text-white shadow-lg">
-              S
+            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center overflow-hidden">
+              <img src="/logo.png" alt="SettleAI Logo" className="w-full h-full object-cover" />
             </div>
             <span className="text-[15px] font-semibold tracking-tight">
               SettleAI
@@ -299,8 +299,8 @@ export default function LandingPage() {
       <footer className="border-t border-border py-8 px-6 bg-background">
         <div className="max-w-6xl mx-auto flex items-center justify-between text-[12px] text-muted-foreground">
           <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-[9px] font-bold text-white shadow-sm">
-              S
+            <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center overflow-hidden shadow-sm">
+              <img src="/logo.png" alt="SettleAI Logo" className="w-full h-full object-cover" />
             </div>
             SettleAI
           </div>
