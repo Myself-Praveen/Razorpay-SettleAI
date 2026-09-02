@@ -22,6 +22,7 @@ from ..models import (
     ExceptionCode, ExceptionRecord, NormalizedRecord, ToleranceConfig,
 )
 from ..otel import traced_phase, traced_operation
+from .pii_masker import PIIMasker
 
 VALID_EXCEPTION_CODES = {code.value for code in ExceptionCode}
 
@@ -89,16 +90,16 @@ async def _classify_one(
         )
 
     context = f"""
-Record ID: {record.id}
+Record ID: {PIIMasker.mask(record.id)}
 Source: {record.source.value}
 Amount: ₹{record.amount}
 Type: {record.type.value}
-Settlement ID: {record.settlement_id}
-Order ID: {record.order_id}
-Payment ID: {record.payment_id}
+Settlement ID: {PIIMasker.mask(record.settlement_id) if record.settlement_id else 'None'}
+Order ID: {PIIMasker.mask(record.order_id) if record.order_id else 'None'}
+Payment ID: {PIIMasker.mask(record.payment_id) if record.payment_id else 'None'}
 Date: {record.settled_at}
 Method: {record.method}
-Description: {record.description}
+Description: {PIIMasker.mask(record.description) if record.description else 'None'}
 Adversarial tag: {record.adversarial_tag}
 {f"Human corrections for similar cases:\n{few_shot}" if few_shot else ""}
 """

@@ -23,7 +23,7 @@ BLOCKED_PATTERNS = [
     r"\bALTER\b", r"\bCREATE\b", r"\bTRUNCATE\b", r"\bREPLACE\b",
     r"\bGRANT\b", r"\bREVOKE\b", r"\bEXEC\b", r"\bEXECUTE\b",
     r"--", r"/\*", r"\bUNION\b.*\bSELECT\b",
-    r";\s*\w",
+    r";\s*\w", r"\bsqlite_master\b", r"\bsqlite_schema\b", r"\bpragma\b",
 ]
 
 _blocked_regex = re.compile("|".join(BLOCKED_PATTERNS), re.IGNORECASE)

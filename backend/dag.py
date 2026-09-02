@@ -12,6 +12,7 @@ from __future__ import annotations
 import asyncio
 import json
 import time
+import psutil
 from datetime import datetime
 from typing import AsyncIterator, Optional
 
@@ -264,10 +265,9 @@ class ReconciliationDAG:
 
 
 def _mem_mb() -> float:
-    """Current memory usage in MB."""
     try:
-        import os
-        return round(os.popen("ps -o rss= -p %d" % os.getpid()).read().strip()) / 1024
+        import psutil
+        return psutil.Process().memory_info().rss / 1024 / 1024
     except Exception:
         return 0.0
 

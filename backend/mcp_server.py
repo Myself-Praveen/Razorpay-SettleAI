@@ -108,15 +108,16 @@ class MCPServer:
             await self._emit_event(result_event)
             return result
         except Exception as e:
+            print(f"Internal MCP Error: {e}")  # Log internally, don't leak to client
             error_event = {
                 "timestamp": datetime.utcnow().isoformat(),
                 "type": "error",
                 "tool": tool_name,
-                "error": str(e),
+                "error": "Internal Server Error",
             }
             self._events.append(error_event)
             await self._emit_event(error_event)
-            return {"error": str(e)}
+            return {"error": "Internal Server Error"}
 
     async def _execute_tool(self, tool_name: str, args: dict) -> dict:
         if tool_name == "reconcile_batch":

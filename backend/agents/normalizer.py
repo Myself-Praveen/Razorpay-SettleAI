@@ -8,7 +8,7 @@ the SQLite WAL queue.
 
 from __future__ import annotations
 
-import json
+import ijson
 import time
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
@@ -72,39 +72,38 @@ async def _stream_normalize(
 
     with traced_operation(f"normalize.{source.value}", {"file": str(file_path)}):
         try:
-            with open(file_path, "r") as f:
-                raw_records = json.load(f)
-        except (json.JSONDecodeError, FileNotFoundError):
+            with open(file_path, "rb") as f:
+                for raw in ijson.items(f, 'item'):
+                    record = _normalize_one(raw, source)
+                    await db.write(
+                        INSERT_SQL,
+                        (
+                            record.id,
+                            record.source.value,
+                            record.amount,
+                            record.type.value,
+                            record.debit,
+                            record.credit,
+                            record.fee,
+                            record.tax,
+                            record.settlement_id,
+                            record.order_id,
+                            record.payment_id,
+                            record.settled_at.isoformat() if record.settled_at else None,
+                            record.method,
+                            record.card_network,
+                            record.currency,
+                            record.description,
+                            record.bank_utr,
+                            record.narration,
+                            1 if record.is_adversarial else 0,
+                            record.adversarial_tag,
+                        ),
+                    )
+                    yield record
+        except Exception as e:
+            print(f"Error in streaming {file_path}: {e}")
             return
-
-        for raw in raw_records:
-            record = _normalize_one(raw, source)
-            await db.write(
-                INSERT_SQL,
-                (
-                    record.id,
-                    record.source.value,
-                    record.amount,
-                    record.type.value,
-                    record.debit,
-                    record.credit,
-                    record.fee,
-                    record.tax,
-                    record.settlement_id,
-                    record.order_id,
-                    record.payment_id,
-                    record.settled_at.isoformat() if record.settled_at else None,
-                    record.method,
-                    record.card_network,
-                    record.currency,
-                    record.description,
-                    record.bank_utr,
-                    record.narration,
-                    1 if record.is_adversarial else 0,
-                    record.adversarial_tag,
-                ),
-            )
-            yield record
 
 
 def _normalize_one(raw: dict, source: RecordSource) -> NormalizedRecord:

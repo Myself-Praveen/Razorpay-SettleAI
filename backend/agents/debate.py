@@ -22,6 +22,7 @@ from ..models import (
     ProposedMatch, ToleranceConfig,
 )
 from ..otel import traced_operation
+from .pii_masker import PIIMasker
 
 
 MERCHANT_SYSTEM = """You are the Merchant Agent in a financial reconciliation debate.
@@ -73,11 +74,11 @@ async def run_debate(
     (reject) if LLM is unavailable.
     """
     context = f"""
-Record A: {record_a.id} | ₹{record_a.amount} | {record_a.type.value} | {record_a.source.value}
-  Settlement: {record_a.settlement_id} | Order: {record_a.order_id} | Date: {record_a.settled_at}
+Record A: {PIIMasker.mask(record_a.id)} | ₹{record_a.amount} | {record_a.type.value} | {record_a.source.value}
+  Settlement: {PIIMasker.mask(record_a.settlement_id) if record_a.settlement_id else 'None'} | Order: {PIIMasker.mask(record_a.order_id) if record_a.order_id else 'None'} | Date: {record_a.settled_at}
 
-Record B: {record_b.id} | ₹{record_b.amount} | {record_b.type.value} | {record_b.source.value}
-  Settlement: {record_b.settlement_id} | Order: {record_b.order_id} | Date: {record_b.settled_at}
+Record B: {PIIMasker.mask(record_b.id)} | ₹{record_b.amount} | {record_b.type.value} | {record_b.source.value}
+  Settlement: {PIIMasker.mask(record_b.settlement_id) if record_b.settlement_id else 'None'} | Order: {PIIMasker.mask(record_b.order_id) if record_b.order_id else 'None'} | Date: {record_b.settled_at}
 
 Initial confidence: {match.confidence}
 Feature attribution: {json.dumps([f.model_dump() for f in match.feature_attribution.features], indent=2) if match.feature_attribution else 'N/A'}

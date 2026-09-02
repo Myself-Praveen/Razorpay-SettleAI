@@ -24,3 +24,15 @@ services:
     volumes:
       - ./data:/app/data
       - ./output:/app/output
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - settleai
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+

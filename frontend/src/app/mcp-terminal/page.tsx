@@ -32,55 +32,60 @@ export default function McpTerminalPage() {
   };
 
   return (
-    <div className="max-w-3xl h-[calc(100vh-4rem)] flex flex-col">
-      <h1 className="text-3xl font-bold mb-2">MCP Terminal</h1>
-      <p className="text-gray-400 mb-4">
+    <div className="max-w-3xl h-[calc(100vh-4rem)] flex flex-col pb-8">
+      <h1 className="text-3xl font-black text-black uppercase tracking-tight mb-3">MCP Terminal</h1>
+      <p className="text-black bg-accent px-2 py-1 font-bold inline-block mb-6 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
         Live visualization of agentic tool calls via Model Context Protocol
       </p>
 
-      <div className="flex items-center gap-2 mb-4">
-        <span className={`w-2 h-2 rounded-full ${connected ? "bg-green-500" : "bg-red-500"}`} />
-        <span className="text-sm text-gray-400">{connected ? "Connected" : "Disconnected"}</span>
+      <div className="flex items-center gap-2 mb-6">
+        <span className={`w-3 h-3 border-2 border-black ${connected ? "bg-green-400" : "bg-red-500"}`} />
+        <span className="text-xs text-black font-bold uppercase tracking-wider">{connected ? "Connected" : "Disconnected"}</span>
       </div>
 
       <div
         ref={terminalRef}
-        className="flex-1 bg-gray-900 rounded-lg border border-gray-800 p-4 overflow-auto font-mono text-xs"
+        className="flex-1 bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-4 overflow-auto font-mono text-xs relative"
       >
-        {messages.length === 0 ? (
-          <p className="text-gray-600">Waiting for MCP tool calls...</p>
-        ) : (
-          messages.map((msg, i) => (
-            <div key={i} className="mb-3 pb-3 border-b border-gray-800 last:border-0">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-gray-500">[{new Date().toLocaleTimeString()}]</span>
-                <span className="text-yellow-400 font-semibold">TOOL CALL:</span>
-                <span className="text-indigo-400">{msg.tool || msg.type || "unknown"}</span>
-              </div>
-              <div className="text-gray-400">
-                <span className="text-gray-500">Input:</span> {JSON.stringify(msg.input || msg, null, 2)}
-              </div>
-              {msg.result && (
-                <div className="text-green-400 mt-1">
-                  <span className="text-gray-500">Result:</span> {JSON.stringify(msg.result)}
+        <div className="absolute top-0 right-0 border-b-4 border-l-4 border-black bg-accent px-3 py-1 font-bold text-xs uppercase tracking-widest text-black">Terminal</div>
+        <div className="mt-6">
+          {messages.length === 0 ? (
+            <p className="text-black font-bold italic">Waiting for MCP tool calls...</p>
+          ) : (
+            messages.map((msg, i) => (
+              <div key={i} className="mb-4 pb-4 border-b-2 border-dashed border-gray-300 last:border-0">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-black font-bold bg-gray-100 border border-black px-1 py-0.5">[{new Date().toLocaleTimeString()}]</span>
+                  <span className="text-white bg-black px-2 py-0.5 font-black uppercase tracking-wider">TOOL CALL:</span>
+                  <span className="text-black font-black uppercase tracking-widest border-b-2 border-black">{msg.tool || msg.type || "unknown"}</span>
                 </div>
-              )}
-            </div>
-          ))
-        )}
+                <div className="text-black bg-gray-50 border-2 border-black p-2 shadow-inner">
+                  <span className="text-black font-bold uppercase text-[10px] bg-accent px-1 border border-black mr-2">Input</span> 
+                  <pre className="mt-1 whitespace-pre-wrap">{JSON.stringify(msg.input || msg, null, 2)}</pre>
+                </div>
+                {msg.result && (
+                  <div className="text-black bg-green-50 border-2 border-green-500 p-2 mt-2 shadow-inner">
+                    <span className="text-white font-bold uppercase text-[10px] bg-green-500 px-1 border border-green-700 mr-2">Result</span> 
+                    <pre className="mt-1 whitespace-pre-wrap">{JSON.stringify(msg.result)}</pre>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
-      <div className="flex gap-2 mt-4">
+      <div className="flex gap-4 mt-8">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && send()}
           placeholder="Type a query to trigger MCP tool calls..."
-          className="flex-1 px-4 py-3 bg-gray-900 border border-gray-800 rounded-lg text-sm font-mono focus:outline-none focus:border-indigo-500"
+          className="flex-1 px-4 py-3 bg-white border-4 border-black rounded-none text-sm font-bold font-mono focus:outline-none focus:ring-4 focus:ring-accent shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black placeholder:text-gray-400"
         />
         <button
           onClick={send}
-          className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-sm font-medium"
+          className="px-8 py-3 bg-black text-white hover:bg-accent hover:text-black rounded-none border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] text-sm font-black uppercase tracking-widest transition-all"
         >
           Send
         </button>

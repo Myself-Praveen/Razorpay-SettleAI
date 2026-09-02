@@ -216,7 +216,7 @@ class AsyncSQLiteWriter:
                         self._write_queue.get(), timeout=0.05
                     )
                     items.append(item)
-                    while not self._write_queue.empty():
+                    while len(items) < 1000 and not self._write_queue.empty():
                         try:
                             items.append(self._write_queue.get_nowait())
                         except asyncio.QueueEmpty:

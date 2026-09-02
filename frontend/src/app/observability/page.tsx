@@ -18,40 +18,40 @@ export default function ObservabilityPage() {
 
   return (
     <div className="max-w-4xl">
-      <h1 className="text-3xl font-bold mb-2">Observability</h1>
-      <p className="text-gray-400 mb-8">
+      <h1 className="text-3xl font-black text-black uppercase tracking-tight mb-3">Observability</h1>
+      <p className="text-black bg-accent px-2 py-1 font-bold inline-block mb-10 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
         OpenTelemetry traces, Jaeger, LangChain instrumentation, and SQL audit
       </p>
 
-      <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 mb-6">
-        <h2 className="text-lg font-semibold mb-3">Jaeger Tracing</h2>
+      <div className="bg-white rounded-none p-6 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-8">
+        <h2 className="text-lg font-black uppercase tracking-wide text-black mb-4">Jaeger Tracing</h2>
         <a
           href="http://localhost:16686"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm border border-gray-700 transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-2 bg-black text-white hover:bg-accent hover:text-black border-2 border-black rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-[2px] hover:translate-x-[2px] transition-all text-sm font-bold uppercase tracking-wider"
         >
           Open Jaeger UI
           <svg className="w-3 h-3" viewBox="0 0 12 12" fill="currentColor">
             <path d="M11 1H5v1h5v5h1V1.707L6.243 8.464 5.536 7.757 10.293 3H9V2h2v-1z" />
           </svg>
         </a>
-        <p className="text-xs text-gray-500 mt-2">Distributed traces across all pipeline phases</p>
+        <p className="text-xs text-black font-bold uppercase tracking-wider mt-5">Distributed traces across all pipeline phases</p>
       </div>
 
-      <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 mb-6">
-        <h2 className="text-lg font-semibold mb-4">Phase Execution Timings</h2>
-        <div className="space-y-3">
+      <div className="bg-white rounded-none p-6 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-8">
+        <h2 className="text-lg font-black uppercase tracking-wide text-black mb-5">Phase Execution Timings</h2>
+        <div className="space-y-4">
           {traces.map((trace, i) => (
             <div key={i} className="flex items-center gap-4">
-              <span className="w-32 text-xs text-gray-400 font-mono">{trace.phase}</span>
-              <div className="flex-1 h-1.5 bg-gray-800 rounded-full overflow-hidden">
+              <span className="w-32 text-xs text-black font-mono font-bold uppercase bg-gray-100 border border-black px-1 text-center py-0.5">{trace.phase}</span>
+              <div className="flex-1 h-3 bg-gray-200 border border-black rounded-none overflow-hidden relative">
                 <div
-                  className="h-full bg-indigo-500 rounded-full"
+                  className="h-full bg-accent border-r border-black absolute top-0 left-0"
                   style={{ width: `${Math.min((trace.duration_ms / 120) * 100, 100)}%` }}
                 />
               </div>
-              <span className="text-xs text-gray-500 w-32 text-right">
+              <span className="text-xs text-black font-bold w-32 text-right">
                 {trace.duration_ms?.toFixed(1)}ms (avg: {trace.duration_ms?.toFixed(1)}ms)
               </span>
             </div>
@@ -59,52 +59,52 @@ export default function ObservabilityPage() {
         </div>
       </div>
 
-      <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 mb-6">
-        <h2 className="text-lg font-semibold mb-3">SQL Firewall Audit Log</h2>
-        <p className="text-sm text-gray-400 mb-4">
-          Blocked: <span className="text-red-400 font-medium">{blocked}</span> | Allowed:{" "}
-          <span className="text-green-400 font-medium">{allowed}</span>
+      <div className="bg-white rounded-none p-6 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-8">
+        <h2 className="text-lg font-black uppercase tracking-wide text-black mb-3">SQL Firewall Audit Log</h2>
+        <p className="text-sm text-black font-bold uppercase tracking-wider mb-6">
+          Blocked: <span className="text-white bg-red-500 px-1 border border-black">{blocked}</span> | Allowed:{" "}
+          <span className="text-black bg-green-400 px-1 border border-black">{allowed}</span>
         </p>
-        <div className="space-y-2 max-h-64 overflow-auto">
+        <div className="space-y-3 max-h-64 overflow-auto p-4 bg-gray-100 border-2 border-black shadow-inner">
           {sqlAudit.map((entry, i) => (
-            <div key={i} className="flex items-center gap-3 text-xs font-mono">
-              <span className={entry.allowed ? "text-green-400" : "text-red-400"}>
+            <div key={i} className="flex items-center gap-3 text-xs font-mono border-b border-gray-300 pb-2">
+              <span className={`px-1 font-bold border border-black ${entry.allowed ? "bg-green-400 text-black" : "bg-red-500 text-white"}`}>
                 {entry.allowed ? "ALLOWED" : "BLOCKED"}
               </span>
-              <span className="text-gray-500 w-44 shrink-0">{entry.timestamp}</span>
-              <span className="text-gray-400 truncate">{entry.query}</span>
+              <span className="text-black w-44 shrink-0">{entry.timestamp}</span>
+              <span className="text-black font-bold truncate">{entry.query}</span>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
-        <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
-          <h3 className="font-medium mb-3">LangChain Instrumentation</h3>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-400">Trace spans</span>
-              <span className="font-medium">{traces.length}</span>
+      <div className="grid grid-cols-2 gap-8">
+        <div className="bg-white rounded-none p-6 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <h3 className="font-black uppercase tracking-wide text-black mb-5">LangChain Instrumentation</h3>
+          <div className="space-y-3 text-sm">
+            <div className="flex justify-between border-b-2 border-dotted border-gray-300 pb-2">
+              <span className="text-black font-bold uppercase tracking-wider text-xs">Trace spans</span>
+              <span className="font-black text-black">{traces.length}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">HITL memory entries</span>
-              <span className="font-medium">{health?.hitl_entries || 0}</span>
+            <div className="flex justify-between border-b-2 border-dotted border-gray-300 pb-2">
+              <span className="text-black font-bold uppercase tracking-wider text-xs">HITL memory entries</span>
+              <span className="font-black text-black">{health?.hitl_entries || 0}</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
-          <h3 className="font-medium mb-3">System Health</h3>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-400">Status</span>
-              <span className={`font-medium ${health?.status === "healthy" ? "text-green-400" : "text-red-400"}`}>
+        <div className="bg-white rounded-none p-6 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <h3 className="font-black uppercase tracking-wide text-black mb-5">System Health</h3>
+          <div className="space-y-3 text-sm">
+            <div className="flex justify-between border-b-2 border-dotted border-gray-300 pb-2">
+              <span className="text-black font-bold uppercase tracking-wider text-xs">Status</span>
+              <span className={`font-black uppercase border-2 border-black px-1 text-xs ${health?.status === "healthy" ? "bg-green-400 text-black" : "bg-red-500 text-white"}`}>
                 {health?.status || "unknown"}
               </span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">Uptime</span>
-              <span className="font-medium">{health?.uptime_seconds?.toFixed(0) || 0}s</span>
+            <div className="flex justify-between border-b-2 border-dotted border-gray-300 pb-2">
+              <span className="text-black font-bold uppercase tracking-wider text-xs">Uptime</span>
+              <span className="font-black text-black">{health?.uptime_seconds?.toFixed(0) || 0}s</span>
             </div>
           </div>
         </div>

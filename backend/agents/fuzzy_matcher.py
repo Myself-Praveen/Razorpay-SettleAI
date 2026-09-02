@@ -10,13 +10,13 @@ Uses Ollama (local) for cost-efficient fuzzy matching.
 from __future__ import annotations
 
 import json
-import os
-import time
+from collections import defaultdict
 from datetime import datetime
 from decimal import Decimal
 from difflib import SequenceMatcher
 from typing import Optional
 
+from .pii_masker import PIIMasker
 from ..database import AsyncSQLiteWriter
 from ..models import (
     FeatureAttribution, FeatureWeight, MatchStatus, NormalizedRecord,
@@ -184,84 +184,84 @@ def _compute_feature_attribution(
     """
     a_amount = Decimal(record_a.amount)
     b_amount = Decimal(record_b.amount)
-    max_amt = max(a_amount, Decimal("1"))
+    max_amt = max(a_amount, Decimal("1.0"))
 
-    amount_score = float(Decimal('1.0') - abs(a_amount - b_amount) / max_amt)
-    amount_score = max(0.0, min(1.0, amount_score))
+    amount_score = Decimal("1.0") - (abs(a_amount - b_amount) / max_amt)
+    amount_score = max(Decimal("0.0"), min(Decimal("1.0"), amount_score))
 
-    date_score = 0.5  # Default if no dates
+    date_score = Decimal("0.5")  # Default if no dates
     if record_a.settled_at and record_b.settled_at:
-        days_diff = abs((record_a.settled_at - record_b.settled_at).days)
-        date_score = max(0.0, 1.0 - days_diff / 7)
+        days_diff = Decimal(abs((record_a.settled_at - record_b.settled_at).days))
+        date_score = max(Decimal("0.0"), Decimal("1.0") - (days_diff / Decimal("7.0")))
 
     ref_a = record_a.order_id or record_a.id or ""
     ref_b = record_b.order_id or record_b.id or ""
-    reference_score = SequenceMatcher(None, ref_a.lower(), ref_b.lower()).ratio()
+    reference_score = Decimal(str(SequenceMatcher(None, ref_a.lower(), ref_b.lower()).ratio()))
 
-    method_score = 1.0 if record_a.method and record_b.method and record_a.method == record_b.method else 0.0
+    method_score = Decimal("1.0") if record_a.method and record_b.method and record_a.method == record_b.method else Decimal("0.0")
     if not record_a.method and not record_b.method:
-        method_score = 0.5
+        method_score = Decimal("0.5")
 
-    tax_bonus = 0.0
+    tax_bonus = Decimal("0.0")
     a_tax = Decimal(record_a.tax)
     b_tax = Decimal(record_b.tax)
     amt_diff = abs(a_amount - b_amount)
     
-    if amt_diff > 0 and (amt_diff == a_tax or amt_diff == b_tax):
-        tax_bonus = 0.10
-        amount_score = min(1.0, amount_score + 0.3)
+    if amt_diff > Decimal("0.0") and (amt_diff == a_tax or amt_diff == b_tax):
+        tax_bonus = Decimal("0.10")
+        amount_score = min(Decimal("1.0"), amount_score + Decimal("0.3"))
     
-    if amount_score == 1.0 and a_tax != b_tax:
-        tax_bonus = 0.05
+    if amount_score == Decimal("1.0") and a_tax != b_tax:
+        tax_bonus = Decimal("0.05")
 
     confidence = (
-        0.50 * amount_score
-        + 0.25 * date_score
-        + 0.15 * reference_score
-        + 0.10 * method_score
+        Decimal("0.50") * amount_score
+        + Decimal("0.25") * date_score
+        + Decimal("0.15") * reference_score
+        + Decimal("0.10") * method_score
         + tax_bonus
     )
-    confidence = min(1.0, confidence)
+    confidence = min(Decimal("1.0"), confidence)
 
     features = [
         FeatureWeight(
             name="W_amount",
             weight=0.50,
-            raw_score=round(amount_score, 4),
+            raw_score=float(round(amount_score, 4)),
             justification=f"Amount comparison: ₹{record_a.amount} vs ₹{record_b.amount}",
         ),
         FeatureWeight(
             name="W_date",
             weight=0.25,
-            raw_score=round(date_score, 4),
+            raw_score=float(round(date_score, 4)),
             justification=_date_justification(record_a, record_b),
         ),
         FeatureWeight(
             name="W_reference",
             weight=0.15,
-            raw_score=round(reference_score, 4),
-            justification=f"Fuzzy match: '{ref_a}' vs '{ref_b}'",
+            raw_score=float(round(reference_score, 4)),
+            justification=f"Fuzzy match: '{PIIMasker.mask(ref_a)}' vs '{PIIMasker.mask(ref_b)}'",
         ),
         FeatureWeight(
             name="W_method",
             weight=0.10,
-            raw_score=round(method_score, 4),
+            raw_score=float(round(method_score, 4)),
             justification=f"Method: {record_a.method} vs {record_b.method}",
         ),
     ]
     
-    if tax_bonus > 0:
+    if tax_bonus > Decimal("0.0"):
         features.append(
             FeatureWeight(
                 name="W_tax_heuristic",
-                weight=tax_bonus,
+                weight=float(tax_bonus),
                 raw_score=1.0,
                 justification=f"Tax-line logic matched. Tax A: {a_tax}, Tax B: {b_tax}",
             )
         )
 
     return FeatureAttribution(
-        confidence=round(confidence, 4),
+        confidence=float(round(confidence, 4)),
         features=features,
         decision_boundary=(
             f"0.50({amount_score:.3f}) + 0.25({date_score:.3f}) + "
