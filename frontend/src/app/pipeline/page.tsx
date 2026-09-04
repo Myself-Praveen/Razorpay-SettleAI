@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import { reconcile } from "@/lib/api";
+import { reconcile, generateData } from "@/lib/api";
+import { toast } from "sonner";
 
 const PHASES = [
   { name: "Normalize", desc: "Streaming O(1) via ijson" },
@@ -12,8 +13,21 @@ const PHASES = [
 
 export default function PipelinePage() {
   const [running, setRunning] = useState(false);
+  const [generating, setGenerating] = useState(false);
   const [progress, setProgress] = useState<Record<string, number>>({});
   const [done, setDone] = useState<any>(null);
+
+  const handleGenerate = async () => {
+    setGenerating(true);
+    try {
+      const res = await generateData(200, true);
+      toast.success(`Generated ${res.total_records} test records!`);
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to generate data. Backend running?");
+    }
+    setGenerating(false);
+  };
 
   const start = async () => {
     setRunning(true);
@@ -25,6 +39,7 @@ export default function PipelinePage() {
       if (final) setDone(final);
     } catch (e) {
       console.error(e);
+      toast.error("Pipeline failed to start. Is the backend running?");
     }
     setRunning(false);
   };
@@ -36,13 +51,20 @@ export default function PipelinePage() {
         Concurrent DAG with 5 phases and crash recovery checkpoints
       </p>
 
-      <div>
+      <div className="flex gap-4 mb-10">
         <button
           onClick={start}
-          disabled={running}
-          className="px-6 py-3 bg-black hover:bg-accent hover:text-black text-white rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-1 hover:translate-x-1 font-bold disabled:opacity-50 transition-all mb-10 uppercase tracking-widest"
+          disabled={running || generating}
+          className="px-6 py-3 bg-black hover:bg-accent hover:text-black text-white rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-1 hover:translate-x-1 font-bold disabled:opacity-50 transition-all uppercase tracking-widest"
         >
           {running ? "Running..." : "Start Pipeline"}
+        </button>
+        <button
+          onClick={handleGenerate}
+          disabled={running || generating}
+          className="px-6 py-3 bg-white hover:bg-gray-100 text-black rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-1 hover:translate-x-1 font-bold disabled:opacity-50 transition-all uppercase tracking-widest"
+        >
+          {generating ? "Generating..." : "Generate Test Data"}
         </button>
       </div>
 
