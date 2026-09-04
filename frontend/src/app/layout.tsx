@@ -1,3 +1,4 @@
+import { Toaster } from "sonner";
 import type { Metadata } from "next";
 import "./globals.css";
 import { GeistSans } from "geist/font/sans";
@@ -9,51 +10,19 @@ export const metadata: Metadata = {
   description: "Production-Grade AI Finance Reconciliation",
 };
 
-const NAV_ITEMS = [
-  { href: "/", label: "Landing" },
-  { href: "/pipeline", label: "Pipeline" },
-  { href: "/exceptions", label: "Exceptions" },
-  { href: "/qa", label: "Q&A" },
-  { href: "/mcp-terminal", label: "MCP Terminal" },
-  { href: "/forecast", label: "Forecast" },
-  { href: "/audit", label: "Audit" },
-  { href: "/observability", label: "Observability" },
-];
+import { Sidebar } from "@/components/Sidebar";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={cn("font-sans antialiased", GeistSans.variable, GeistMono.variable)}>
       <body className="bg-background text-foreground">
         <div className="flex min-h-screen">
-          <nav className="w-56 bg-background border-r-2 border-border p-4 flex flex-col">
-            <div className="mb-8">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center overflow-hidden">
-                  <img src="/logo.png" alt="SettleAI Logo" className="w-full h-full object-cover" />
-                </div>
-                <h1 className="text-[15px] font-semibold tracking-tight">SettleAI</h1>
-              </div>
-              <p className="text-[11px] text-muted-foreground mt-1.5 ml-8">Reconciliation Agent</p>
-            </div>
-            <div className="space-y-0.5">
-              {NAV_ITEMS.map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  className="block px-3 py-1.5 rounded-none border border-transparent text-[13px] text-muted-foreground hover:bg-black hover:text-white hover:border-black transition-colors font-medium"
-                >
-                  {item.label}
-                </a>
-              ))}
-            </div>
-            <div className="mt-auto pt-4 border-t border-border">
-              <p className="text-[11px] text-muted-foreground">Razorpay Buildathon 2026</p>
-              <p className="text-[11px] text-muted-foreground">AI Finance Controller</p>
-            </div>
-          </nav>
-
+          <Sidebar />
           <main className="flex-1 overflow-auto">{children}</main>
         </div>
+        <Toaster toastOptions={{
+          className: 'bg-white border-4 border-black rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] font-mono text-black font-bold',
+        }} />
       </body>
     </html>
   );

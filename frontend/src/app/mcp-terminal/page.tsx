@@ -47,7 +47,7 @@ export default function McpTerminalPage() {
         ref={terminalRef}
         className="flex-1 bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-4 overflow-auto font-mono text-xs relative"
       >
-        <div className="absolute top-0 right-0 border-b-4 border-l-4 border-black bg-accent px-3 py-1 font-bold text-xs uppercase tracking-widest text-black">Terminal</div>
+        <div className="absolute top-0 right-0 border-b-4 border-l-2 border-black bg-accent px-3 py-1 font-bold text-xs uppercase tracking-widest text-black">Terminal</div>
         <div className="mt-6">
           {messages.length === 0 ? (
             <p className="text-black font-bold italic">Waiting for MCP tool calls...</p>
