@@ -8,17 +8,17 @@
 
 ---
 
-## 🛑 The Problem: The Reconciliation Bottleneck
+## The Problem: The Reconciliation Bottleneck
 In modern finance operations, reconciliation, settlement, and forecasting are still largely done by hand. As transaction volumes grow across multiple payment gateways, bank statements, and tax systems, finance teams are overwhelmed by edge cases, rounding errors, and split payments. Current Generative AI tools are fast at generating text but fail at the deterministic rigor required for accounting.
 
-## 💡 The Solution: SettleAI
+## The Solution: SettleAI
 SettleAI introduces a hybrid architecture: a deterministic accounting engine paired with an AI reasoning layer. It processes records in O(1) memory, matches them using O(N log N) algorithms, and only delegates to Large Language Models (LLMs) for complex exception classification and confidence debate. 
 
 Every AI decision is gated by a rigorous **double-entry verification check** and a **Zero-Trust SQL firewall**.
 
 ---
 
-## 🚀 Key Features & Architecture
+## Key Features & Architecture
 
 ### 1. High-Performance Reconciliation DAG
 The system operates on a 5-phase Directed Acyclic Graph (DAG) for processing, streamed in real-time to the frontend via Server-Sent Events (SSE).
@@ -30,7 +30,7 @@ The system operates on a 5-phase Directed Acyclic Graph (DAG) for processing, st
 * **Phase 5: Verification Gate** - A deterministic gate ensuring mathematical invariants hold true before marking anything as settled.
 
 ### 2. Multi-Tier AI Reasoning (Gemini + Ollama Fallback)
-The reasoning layer utilizes Google's **Gemini 1.5 Flash** (via the OpenAI-compatible endpoint) for lightning-fast exception classification and multi-agent debate. 
+The reasoning layer utilizes Google's **Gemini 1.5 Flash** (via the OpenAI-compatible endpoint) for rapid exception classification and multi-agent debate. 
 * **Resilience Built-In**: If the Gemini API hits a rate limit or times out, the system automatically fails over to a **local Ollama instance** (`llama3`) to ensure finance operations never halt. If both fail, it degrades gracefully to deterministic rule-based handling.
 
 ### 3. Zero-Trust SQL & Security
@@ -46,7 +46,7 @@ SettleAI uses Write-Ahead Logging (WAL) SQLite checkpoints after every DAG phase
 
 ---
 
-## ⚙️ Getting Started
+## Getting Started
 
 ### Prerequisites
 * Python 3.10+
@@ -67,7 +67,7 @@ SettleAI uses Write-Ahead Logging (WAL) SQLite checkpoints after every DAG phase
    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
    pip install -r requirements.txt
    
-   # Set your Gemini API key
+   # Set your API keys
    export GEMINI_API_KEY="your_api_key_here"
    export SETTLEAI_API_KEY="settleai_hackathon_secret"
    
@@ -86,12 +86,12 @@ SettleAI uses Write-Ahead Logging (WAL) SQLite checkpoints after every DAG phase
 
 ---
 
-## 📊 Live Deployment
+## Live Deployment
 SettleAI is fully deployed for demonstration:
 * **Frontend UI**: [Vercel Deployment](https://razorpay-settle-ai.vercel.app/)
 * **Backend API**: Render (FastAPI + SQLite WAL)
 
-## 🛠️ Technologies Used
+## Technologies Used
 * **Backend**: Python, FastAPI, SQLite (WAL mode), Pydantic, asyncio, httpx
 * **Frontend**: Next.js, React, TailwindCSS, Framer Motion, Recharts
 * **AI/LLMs**: Google Gemini 1.5 Flash, Ollama (Llama3 Failover)
@@ -100,5 +100,5 @@ SettleAI is fully deployed for demonstration:
 ---
 
 <div align="center">
-  <p>Built with ❤️ by Praveen for the Razorpay Buildathon 2026.</p>
+  <p>Built by Praveen for the Razorpay Buildathon 2026.</p>
 </div>
