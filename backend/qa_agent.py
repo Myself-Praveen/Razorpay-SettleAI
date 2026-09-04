@@ -90,7 +90,24 @@ async def _nl_to_sql(question: str) -> str:
                 if resp.status_code == 200:
                     return resp.json()["choices"][0]["message"]["content"].strip()
         except Exception:
-            pass
+            try:
+                ollama_host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+                async with httpx.AsyncClient(timeout=15.0) as client:
+                    resp = await client.post(
+                        f"{ollama_host}/api/chat",
+                        json={
+                            "model": "llama3",
+                            "messages": [
+                                {"role": "system", "content": SYSTEM_PROMPT},
+                                {"role": "user", "content": question},
+                            ],
+                            "stream": False
+                        }
+                    )
+                    if resp.status_code == 200:
+                        return resp.json()["message"]["content"].strip()
+            except Exception:
+                pass
 
     return _fallback_nl_to_sql(question)
 

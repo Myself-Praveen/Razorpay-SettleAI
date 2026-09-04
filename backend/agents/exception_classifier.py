@@ -169,26 +169,49 @@ def _deterministic_classify(record: NormalizedRecord) -> dict:
 async def _call_llm_classifier(context: str) -> str:
     """Call LLM for exception classification."""
     api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key:
-        raise RuntimeError("No API key available")
-
     import httpx
-    async with httpx.AsyncClient(timeout=10.0) as client:
-        resp = await client.post(
-                "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
-                headers={"Authorization": f"Bearer {api_key}"},
+    
+    if api_key:
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                resp = await client.post(
+                    "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+                    headers={"Authorization": f"Bearer {api_key}"},
+                    json={
+                        "model": "gemini-1.5-flash",
+                        "temperature": 0,
+                        "messages": [
+                            {"role": "system", "content": EXCEPTION_SYSTEM_PROMPT},
+                            {"role": "user", "content": context},
+                        ],
+                    },
+                )
+                if resp.status_code == 200:
+                    return resp.json()["choices"][0]["message"]["content"]
+        except Exception:
+            pass
+
+    # Ollama Fallback
+    try:
+        ollama_host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            resp = await client.post(
+                f"{ollama_host}/api/chat",
                 json={
-                "model": "gemini-1.5-flash",
-                "temperature": 0,
-                "messages": [
-                    {"role": "system", "content": EXCEPTION_SYSTEM_PROMPT},
-                    {"role": "user", "content": context},
-                ],
-            },
-        )
-        if resp.status_code == 200:
-            return resp.json()["choices"][0]["message"]["content"]
-        raise RuntimeError(f"LLM API error: {resp.status_code}")
+                    "model": "llama3",
+                    "messages": [
+                        {"role": "system", "content": EXCEPTION_SYSTEM_PROMPT},
+                        {"role": "user", "content": context},
+                    ],
+                    "stream": False
+                }
+            )
+            if resp.status_code == 200:
+                return resp.json()["message"]["content"]
+    except Exception:
+        pass
+        
+    raise RuntimeError("LLM APIs failed")
 
 
 def _parse_classification(raw: str) -> dict:

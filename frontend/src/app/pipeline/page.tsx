@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { reconcile, generateData } from "@/lib/api";
 import { toast } from "sonner";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 
 const PHASES = [
   { name: "Normalize", desc: "Streaming O(1) via ijson" },
@@ -95,23 +96,55 @@ export default function PipelinePage() {
       </div>
 
       {done && (
-        <div className="mt-10 p-6 bg-white rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <p className="font-bold text-black bg-green-400 inline-block px-2 py-1 border-2 border-black mb-5 uppercase tracking-wide text-sm">
-            Complete! Match rate: {(done.match_rate * 100).toFixed(1)}% | Duration: {done.duration_ms?.toFixed(0)}ms
-          </p>
-          <div className="grid grid-cols-3 gap-6 text-sm">
-            <div className="border-t-4 border-green-500 pt-2">
-              <p className="text-black font-bold uppercase tracking-wider text-xs">Matches</p>
-              <p className="text-2xl font-black text-black">{done.total_matches}</p>
+        <div className="mt-10 p-6 bg-white rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col md:flex-row gap-8 items-center">
+          <div className="flex-1 w-full">
+            <p className="font-bold text-black bg-green-400 inline-block px-2 py-1 border-2 border-black mb-5 uppercase tracking-wide text-sm">
+              Complete! Match rate: {(done.match_rate * 100).toFixed(1)}% | Duration: {done.duration_ms?.toFixed(0)}ms
+            </p>
+            <div className="flex flex-col justify-center space-y-4">
+              <div className="border-l-4 border-green-500 pl-4 py-2 bg-gray-50 border-y-2 border-r-2 border-y-black border-r-black">
+                <p className="text-black font-bold uppercase tracking-wider text-xs">Total Matches</p>
+                <p className="text-3xl font-black text-black">{done.total_matches}</p>
+              </div>
+              <div className="border-l-4 border-yellow-500 pl-4 py-2 bg-gray-50 border-y-2 border-r-2 border-y-black border-r-black">
+                <p className="text-black font-bold uppercase tracking-wider text-xs">Total Exceptions</p>
+                <p className="text-3xl font-black text-black">{done.total_exceptions}</p>
+              </div>
+              <div className="border-l-4 border-red-500 pl-4 py-2 bg-gray-50 border-y-2 border-r-2 border-y-black border-r-black">
+                <p className="text-black font-bold uppercase tracking-wider text-xs">Total Rejected</p>
+                <p className="text-3xl font-black text-black">{done.total_rejected}</p>
+              </div>
             </div>
-            <div className="border-t-4 border-yellow-500 pt-2">
-              <p className="text-black font-bold uppercase tracking-wider text-xs">Exceptions</p>
-              <p className="text-2xl font-black text-black">{done.total_exceptions}</p>
-            </div>
-            <div className="border-t-4 border-red-500 pt-2">
-              <p className="text-black font-bold uppercase tracking-wider text-xs">Rejected</p>
-              <p className="text-2xl font-black text-black">{done.total_rejected}</p>
-            </div>
+          </div>
+          <div className="flex-1 w-full h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={[
+                    { name: 'Matches', value: done.total_matches },
+                    { name: 'Exceptions', value: done.total_exceptions },
+                    { name: 'Rejected', value: done.total_rejected }
+                  ]}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={100}
+                  paddingAngle={2}
+                  dataKey="value"
+                  stroke="#000"
+                  strokeWidth={2}
+                >
+                  <Cell fill="#4ade80" />
+                  <Cell fill="#facc15" />
+                  <Cell fill="#f87171" />
+                </Pie>
+                <Tooltip 
+                  contentStyle={{ borderRadius: '0px', border: '2px solid black', boxShadow: '4px 4px 0px 0px rgba(0,0,0,1)', fontWeight: 'bold' }}
+                  itemStyle={{ color: 'black' }}
+                />
+                <Legend iconType="square" wrapperStyle={{ fontWeight: 'bold' }} />
+              </PieChart>
+            </ResponsiveContainer>
           </div>
         </div>
       )}

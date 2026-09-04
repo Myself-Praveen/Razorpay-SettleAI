@@ -155,7 +155,24 @@ async def _call_llm(system_prompt: str, user_input: str) -> str:
                 if resp.status_code == 200:
                     return resp.json()["choices"][0]["message"]["content"]
         except Exception:
-            pass
+            try:
+                ollama_host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+                async with httpx.AsyncClient(timeout=15.0) as client:
+                    resp = await client.post(
+                        f"{ollama_host}/api/chat",
+                        json={
+                            "model": "llama3",
+                            "messages": [
+                                {"role": "system", "content": system_prompt},
+                                {"role": "user", "content": user_input},
+                            ],
+                            "stream": False
+                        }
+                    )
+                    if resp.status_code == 200:
+                        return resp.json()["message"]["content"]
+            except Exception:
+                pass
 
     return json.dumps({
         "argument": "Deterministic fallback: insufficient data for LLM debate",
