@@ -15,7 +15,8 @@ from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Security, HTTPException, status, Depends
+from fastapi.security import APIKeyHeader
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 
@@ -44,6 +45,16 @@ firewall: SQLFirewall = None
 start_time: float = 0
 _last_report: ReconciliationReport = None
 _pipeline_events: list[dict] = []
+_is_pipeline_running: bool = False
+
+API_KEY_NAME = "X-API-Key"
+api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
+
+async def verify_api_key(api_key: str = Security(api_key_header)):
+    expected_key = os.getenv("SETTLEAI_API_KEY", "settleai_hackathon_secret")
+    if not api_key or api_key != expected_key:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Could not validate API KEY")
+
 
 
 @asynccontextmanager
@@ -75,7 +86,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000", "https://razorpay-settle-ai.vercel.app", "https://razorpay-settleai.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -83,7 +94,7 @@ app.add_middleware(
 
 
 
-@app.post("/api/generate-data", response_model=GenerateDataResponse)
+@app.post("/api/generate-data", response_model=GenerateDataResponse, dependencies=[Depends(verify_api_key)])
 async def generate_data(req: GenerateDataRequest):
     """Generate synthetic data + adversarial dataset."""
     from .synth.generator import SyntheticDataGenerator
@@ -126,12 +137,22 @@ async def generate_data(req: GenerateDataRequest):
 
 
 
-@app.post("/api/reconcile")
+@app.post("/api/reconcile", dependencies=[Depends(verify_api_key)])
 async def reconcile(data_dir: str = "data"):
     """Run the full reconciliation pipeline with SSE streaming."""
-    global _last_report
+    global _last_report, _is_pipeline_running
+    
+    if _is_pipeline_running:
+        async def err_stream():
+            yield '{"type": "error", "error": "Pipeline already running"}'
+        return StreamingResponse(err_stream(), media_type="text/event-stream")
+        
+    _is_pipeline_running = True
 
     async def event_stream():
+        global _last_report, _is_pipeline_running
+        dag = ReconciliationDAG(db)
+        progress_list = []
         global _last_report
         dag = ReconciliationDAG(db)
         progress_list = []
@@ -161,6 +182,8 @@ async def reconcile(data_dir: str = "data"):
 
         except Exception as e:
             yield json.dumps({"type": "error", "error": str(e)})
+        finally:
+            _is_pipeline_running = False
 
     return StreamingResponse(
         event_stream(),
@@ -169,7 +192,7 @@ async def reconcile(data_dir: str = "data"):
     )
 
 
-@app.get("/api/reconciliation-report")
+@app.get("/api/reconciliation-report", dependencies=[Depends(verify_api_key)])
 async def get_report():
     """Get the latest reconciliation report."""
     if _last_report:
@@ -177,7 +200,7 @@ async def get_report():
     return {"error": "No report available. Run reconciliation first."}
 
 
-@app.get("/api/matches")
+@app.get("/api/matches", dependencies=[Depends(verify_api_key)])
 async def get_matches():
     """Get all verified matches with feature attribution."""
     if not _last_report:
@@ -185,7 +208,7 @@ async def get_matches():
     return [m.model_dump() for m in _last_report.matches]
 
 
-@app.get("/api/exceptions")
+@app.get("/api/exceptions", dependencies=[Depends(verify_api_key)])
 async def get_exceptions():
     """Get all exceptions with AI hypotheses."""
     if not _last_report:
@@ -193,7 +216,7 @@ async def get_exceptions():
     return [e.model_dump() for e in _last_report.exceptions]
 
 
-@app.get("/api/debates")
+@app.get("/api/debates", dependencies=[Depends(verify_api_key)])
 async def get_debates():
     """Get all debate results."""
     if not _last_report:
@@ -202,7 +225,7 @@ async def get_debates():
 
 
 
-@app.post("/api/exceptions/{exception_id}/resolve")
+@app.post("/api/exceptions/{exception_id}/resolve", dependencies=[Depends(verify_api_key)])
 async def resolve_exception(exception_id: str, req: ResolveExceptionRequest):
     """HITL resolution — human corrects an exception and the system learns."""
     hitl = HITLMemory()
@@ -229,7 +252,7 @@ async def resolve_exception(exception_id: str, req: ResolveExceptionRequest):
 
 
 
-@app.get("/api/trace/{record_id}")
+@app.get("/api/trace/{record_id}", dependencies=[Depends(verify_api_key)])
 async def get_trace(record_id: str):
     """Get the full OTel trace for a record."""
     traces = get_trace_timeline()
@@ -237,60 +260,60 @@ async def get_trace(record_id: str):
     return {"record_id": record_id, "traces": matching}
 
 
-@app.get("/api/observability/traces")
+@app.get("/api/observability/traces", dependencies=[Depends(verify_api_key)])
 async def get_all_traces():
     """Get recent OTel traces."""
     return get_trace_timeline()
 
 
-@app.get("/api/observability/phase-timings")
+@app.get("/api/observability/phase-timings", dependencies=[Depends(verify_api_key)])
 async def get_phase_timings_endpoint():
     """Get per-phase timing statistics."""
     return get_phase_timings()
 
 
 
-@app.post("/api/qa", response_model=QAResponse)
+@app.post("/api/qa", response_model=QAResponse, dependencies=[Depends(verify_api_key)])
 async def qa_endpoint(req: QARequest):
     """Natural language Q&A over reconciliation data."""
     return await answer_question(req.question, db, firewall)
 
 
-@app.get("/api/sql-audit")
+@app.get("/api/sql-audit", dependencies=[Depends(verify_api_key)])
 async def get_sql_audit():
     """Get SQL firewall audit log."""
     return firewall.get_audit_log()
 
 
 
-@app.post("/api/mcp/query")
+@app.post("/api/mcp/query", dependencies=[Depends(verify_api_key)])
 async def mcp_query(tool_name: str, arguments: dict = {}):
     """Execute an MCP tool call."""
     return await mcp.handle_tool_call(tool_name, arguments)
 
 
-@app.get("/api/mcp/tools")
+@app.get("/api/mcp/tools", dependencies=[Depends(verify_api_key)])
 async def mcp_tools():
     """List available MCP tools."""
     from .mcp_server import MCP_TOOLS
     return MCP_TOOLS
 
 
-@app.get("/api/mcp/events")
+@app.get("/api/mcp/events", dependencies=[Depends(verify_api_key)])
 async def mcp_events():
     """Get MCP event history."""
     return mcp.get_events()
 
 
 
-@app.get("/api/forecast")
+@app.get("/api/forecast", dependencies=[Depends(verify_api_key)])
 async def forecast_endpoint(days: int = 7):
     """Cash position forecast."""
     return await forecast_cash_position(db, days)
 
 
 
-@app.get("/api/batch-profile")
+@app.get("/api/batch-profile", dependencies=[Depends(verify_api_key)])
 async def batch_profile():
     """Get dynamic tolerance configuration."""
     if _last_report:
@@ -299,7 +322,7 @@ async def batch_profile():
 
 
 
-@app.get("/api/metrics", response_model=MetricsResponse)
+@app.get("/api/metrics", response_model=MetricsResponse, dependencies=[Depends(verify_api_key)])
 async def metrics():
     """Comprehensive pipeline metrics."""
     match_count = await get_match_count(db)
@@ -340,7 +363,7 @@ async def metrics():
     )
 
 
-@app.get("/api/health", response_model=HealthResponse)
+@app.get("/api/health", response_model=HealthResponse, dependencies=[Depends(verify_api_key)])
 async def health():
     """Health check with phase timing info."""
     return HealthResponse(
@@ -351,7 +374,7 @@ async def health():
     )
 
 
-@app.get("/api/memory/stats")
+@app.get("/api/memory/stats", dependencies=[Depends(verify_api_key)])
 async def memory_stats():
     """HITL memory and LLM cache stats."""
     hitl = HITLMemory()
@@ -362,7 +385,7 @@ async def memory_stats():
 
 
 
-@app.get("/api/adversarial/results")
+@app.get("/api/adversarial/results", dependencies=[Depends(verify_api_key)])
 async def adversarial_results():
     """Compare adversarial dataset results against ground truth."""
     gt_path = Path("data/ground_truth.json")

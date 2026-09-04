@@ -79,6 +79,7 @@ class ReconciliationDAG:
         if not skip_normalize and (resume_from is None or resume_from == PipelinePhase.NORMALIZE):
             record_count = await self._run_phase_normalize(data_dir)
             await save_checkpoint(self.db, PipelinePhase.NORMALIZE, {"record_count": record_count})
+            await self.db.flush()
 
         from .agents.exact_matcher import _load_records
         all_records = await _load_records(self.db)
