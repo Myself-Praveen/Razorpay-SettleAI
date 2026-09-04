@@ -134,17 +134,17 @@ async def _call_llm(system_prompt: str, user_input: str) -> str:
     """
     Call LLM with fallback. Tries OpenAI first, falls back to deterministic.
     """
-    api_key = os.getenv("OPENAI_API_KEY")
+    api_key = os.getenv("GEMINI_API_KEY")
 
     if api_key:
         try:
             import httpx
             async with httpx.AsyncClient(timeout=10.0) as client:
                 resp = await client.post(
-                    "https://api.openai.com/v1/chat/completions",
+                    "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
                     headers={"Authorization": f"Bearer {api_key}"},
                     json={
-                        "model": "gpt-4o-mini",
+                        "model": "gemini-1.5-flash",
                         "temperature": 0,
                         "messages": [
                             {"role": "system", "content": system_prompt},

@@ -167,17 +167,17 @@ def _deterministic_classify(record: NormalizedRecord) -> dict:
 
 async def _call_llm_classifier(context: str) -> str:
     """Call LLM for exception classification."""
-    api_key = os.getenv("OPENAI_API_KEY")
+    api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise RuntimeError("No API key available")
 
     import httpx
     async with httpx.AsyncClient(timeout=10.0) as client:
         resp = await client.post(
-            "https://api.openai.com/v1/chat/completions",
-            headers={"Authorization": f"Bearer {api_key}"},
-            json={
-                "model": "gpt-4o-mini",
+                "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+                headers={"Authorization": f"Bearer {api_key}"},
+                json={
+                "model": "gemini-1.5-flash",
                 "temperature": 0,
                 "messages": [
                     {"role": "system", "content": EXCEPTION_SYSTEM_PROMPT},

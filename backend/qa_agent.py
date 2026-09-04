@@ -69,17 +69,17 @@ async def answer_question(
 
 async def _nl_to_sql(question: str) -> str:
     """Convert natural language to SQL via LLM."""
-    api_key = os.getenv("OPENAI_API_KEY")
+    api_key = os.getenv("GEMINI_API_KEY")
 
     if api_key:
         try:
             import httpx
             async with httpx.AsyncClient(timeout=10.0) as client:
                 resp = await client.post(
-                    "https://api.openai.com/v1/chat/completions",
+                    "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
                     headers={"Authorization": f"Bearer {api_key}"},
                     json={
-                        "model": "gpt-4o-mini",
+                        "model": "gemini-1.5-flash",
                         "temperature": 0,
                         "messages": [
                             {"role": "system", "content": SYSTEM_PROMPT},
