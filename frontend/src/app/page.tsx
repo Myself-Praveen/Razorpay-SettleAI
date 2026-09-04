@@ -54,16 +54,14 @@ function FadeInSection({ children, className = "", delay = 0 }: {
 
 function GridBackground() {
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10 bg-white">
       <div
-        className="absolute inset-0 opacity-[0.03]"
+        className="absolute inset-0 opacity-[0.08]"
         style={{
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-          backgroundSize: "60px 60px",
+          backgroundImage: `linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)`,
+          backgroundSize: "24px 24px",
         }}
       />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full bg-indigo-500/[0.04] blur-[120px]" />
-      <div className="absolute top-40 right-0 w-[400px] h-[400px] rounded-full bg-violet-500/[0.03] blur-[100px]" />
     </div>
   );
 }
@@ -150,26 +148,26 @@ export default function LandingPage() {
         <GridBackground />
         <div className="relative max-w-4xl mx-auto text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
             className="inline-flex items-center justify-center mb-8"
           >
-            <Badge variant="secondary" className="px-3 py-1.5 bg-black hover:bg-black text-white rounded-none border-2 border-black transition-colors font-bold uppercase tracking-wider text-xs">
-              <span className="w-2 h-2 rounded-none bg-accent animate-pulse mr-2" />
+            <div className="px-3 py-1.5 bg-black text-white border-2 border-black font-mono uppercase tracking-widest text-xs shadow-[4px_4px_0px_0px_rgba(200,200,200,1)]">
+              <span className="inline-block w-2 h-2 bg-green-400 mr-2 rounded-full" />
               Razorpay Buildathon 2026 -- AI Finance Controller
-            </Badge>
+            </div>
           </motion.div>
 
           <motion.h1
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.08] mb-6"
+            transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+            className="text-5xl md:text-7xl font-black tracking-tight leading-[1.1] mb-6 text-black"
           >
             Close the books
             <br />
-            <span className="bg-accent text-black px-2 mt-2 inline-block">
+            <span className="inline-block mt-3 border-4 border-black px-4 py-1 bg-accent text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] -rotate-1">
               with confidence.
             </span>
           </motion.h1>
