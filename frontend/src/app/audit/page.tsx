@@ -1,14 +1,27 @@
 "use client";
 import { useState, useEffect } from "react";
 import { getReport, getTraces } from "@/lib/api";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 export default function AuditPage() {
   const [report, setReport] = useState<any>(null);
   const [traces, setTraces] = useState<any[]>([]);
 
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    getReport().then(setReport).catch(() => {});
-    getTraces().then(setTraces).catch(() => {});
+    setIsLoading(true);
+    Promise.all([getReport(), getTraces()])
+      .then(([reportData, tracesData]) => {
+        setReport(reportData);
+        setTraces(tracesData || []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        toast.error("Failed to load audit report. Is the backend running?");
+        setIsLoading(false);
+      });
   }, []);
 
   return (
@@ -18,7 +31,11 @@ export default function AuditPage() {
         Machine-readable reconciliation report with SHA-256 audit hash
       </p>
 
-      {report && !report.error ? (
+      {isLoading ? (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-8 h-8 animate-spin text-black" />
+        </div>
+      ) : report && !report.error ? (
         <>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-bold text-black uppercase tracking-wide">Report: <span className="font-mono bg-gray-100 border border-black px-1 ml-2">{report.report_id}</span></h2>
@@ -58,19 +75,19 @@ export default function AuditPage() {
               <div className="absolute top-0 right-0 border-b-2 border-l-2 border-black bg-accent px-3 py-1 font-bold text-xs uppercase tracking-widest">Config</div>
               <h3 className="font-black uppercase text-black mb-6 tracking-wide">Dynamic Tolerance Config</h3>
               <div className="grid grid-cols-2 gap-6 text-sm">
-                <div className="border-l-4 border-black pl-3">
+                <div className="border-t-2 border-black pt-3">
                   <p className="text-black font-bold uppercase tracking-wider text-xs mb-1">Profile</p>
                   <p className="text-lg font-medium text-black">{report.batch_profile.profile_type || report.batch_profile}</p>
                 </div>
-                <div className="border-l-4 border-black pl-3">
+                <div className="border-t-2 border-black pt-3">
                   <p className="text-black font-bold uppercase tracking-wider text-xs mb-1">Amount Tolerance</p>
                   <p className="text-lg font-medium text-black">Rs.{report.batch_profile.tolerance_config?.amount_tolerance || "N/A"}</p>
                 </div>
-                <div className="border-l-4 border-black pl-3">
+                <div className="border-t-2 border-black pt-3">
                   <p className="text-black font-bold uppercase tracking-wider text-xs mb-1">Confidence Threshold</p>
                   <p className="text-lg font-medium text-black">{report.batch_profile.tolerance_config?.confidence_threshold || "N/A"}</p>
                 </div>
-                <div className="border-l-4 border-black pl-3">
+                <div className="border-t-2 border-black pt-3">
                   <p className="text-black font-bold uppercase tracking-wider text-xs mb-1">Date Tolerance</p>
                   <p className="text-lg font-medium text-black">{report.batch_profile.tolerance_config?.date_tolerance_days || "N/A"}d</p>
                 </div>

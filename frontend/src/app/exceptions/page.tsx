@@ -2,19 +2,27 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getExceptions, resolveException } from "@/lib/api";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { AlertCircle, CheckCircle2, XCircle } from "lucide-react";
+import { AlertCircle, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function ExceptionsPage() {
   const [exceptions, setExceptions] = useState<any[]>([]);
   const [selected, setSelected] = useState<any>(null);
   const [resolved, setResolved] = useState<Set<string>>(new Set());
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    getExceptions().then(setExceptions).catch(() => {});
+    getExceptions()
+      .then((data) => {
+        setExceptions(data || []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        toast.error("Failed to load exceptions. Is the backend running?");
+        setIsLoading(false);
+      });
   }, []);
 
   const handleResolve = async (action: string) => {
@@ -24,8 +32,10 @@ export default function ExceptionsPage() {
       setResolved((prev) => { const next = new Set(prev); next.add(selected.exception_id); return next; });
       setSelected(null);
       setExceptions((prev) => prev.filter((e) => e.exception_id !== selected.exception_id));
+      toast.success(`Exception ${selected.exception_id} resolved!`);
     } catch (e) {
       console.error(e);
+      toast.error("Failed to resolve exception.");
     }
   };
 
@@ -33,17 +43,21 @@ export default function ExceptionsPage() {
 
   return (
     <div className="flex gap-6 h-[calc(100vh-4rem)] p-6 bg-background">
-      <Card className="w-96 flex flex-col border-border bg-card shadow-sm">
-        <CardHeader className="border-b border-border pb-4">
-          <CardTitle className="text-2xl font-bold">Exception Explorer</CardTitle>
-          <p className="text-sm text-muted-foreground mt-1">
+      <div className="w-96 shrink-0 flex flex-col bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none">
+        <div className="border-b-2 border-black p-4 bg-accent">
+          <h2 className="text-2xl font-black uppercase tracking-wide text-black">Exception Explorer</h2>
+          <p className="text-xs text-black font-bold mt-1 uppercase tracking-wider">
             {activeExceptions.length} exceptions requiring human review
           </p>
-        </CardHeader>
-        <ScrollArea className="flex-1 p-4">
+        </div>
+        <ScrollArea className="flex-1 min-h-0 p-4">
           <div className="space-y-3 pr-4">
             <AnimatePresence>
-              {activeExceptions.map((exc) => (
+              {isLoading ? (
+                <div className="flex items-center justify-center py-10">
+                  <Loader2 className="w-8 h-8 animate-spin text-black" />
+                </div>
+              ) : activeExceptions.map((exc) => (
                 <motion.button
                   key={exc.exception_id}
                   initial={{ opacity: 0, y: 10 }}
@@ -60,17 +74,13 @@ export default function ExceptionsPage() {
                     <span className="text-xs font-mono font-medium text-foreground truncate max-w-[180px]">
                       {exc.exception_id}
                     </span>
-                    <Badge variant="secondary" className={`text-[10px] uppercase font-bold tracking-wider rounded-none border-2 border-black ${
-                      exc.confidence_level === "high"
-                        ? "bg-green-500 text-white hover:bg-green-600"
-                        : "bg-accent text-black hover:bg-accent"
-                    }`}>
+                    <span className="inline-block px-1 bg-gray-100 text-[10px] uppercase font-bold tracking-wider rounded-none border-2 border-black">
                       {exc.confidence_level}
-                    </Badge>
+                    </span>
                   </div>
                   <div className="flex items-center gap-1.5 mb-1.5">
-                    <AlertCircle className="w-3.5 h-3.5 text-yellow-500" />
-                    <span className="text-xs font-semibold text-yellow-500">{exc.exception_code}</span>
+                    <AlertCircle className="w-3.5 h-3.5 text-black" />
+                    <span className="text-xs font-black uppercase tracking-wider text-black bg-accent px-1 border border-black">{exc.exception_code}</span>
                   </div>
                   <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                     {exc.hypothesis}
@@ -78,7 +88,7 @@ export default function ExceptionsPage() {
                 </motion.button>
               ))}
             </AnimatePresence>
-            {activeExceptions.length === 0 && (
+            {!isLoading && activeExceptions.length === 0 && (
               <div className="text-center py-10 text-sm text-muted-foreground">
                 <CheckCircle2 className="w-8 h-8 mx-auto mb-3 text-green-500 opacity-50" />
                 No pending exceptions
@@ -86,9 +96,9 @@ export default function ExceptionsPage() {
             )}
           </div>
         </ScrollArea>
-      </Card>
+      </div>
 
-      <div className="flex-1">
+      <div className="flex-1 min-w-0">
         <AnimatePresence mode="wait">
           {selected ? (
             <motion.div
@@ -98,32 +108,32 @@ export default function ExceptionsPage() {
               exit={{ opacity: 0, y: -20 }}
               className="h-full"
             >
-              <Card className="h-full flex flex-col bg-card border-border shadow-sm">
-                <CardHeader className="border-b border-border">
+              <div className="h-full flex flex-col bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none">
+                <div className="border-b-2 border-black p-4 bg-accent">
                   <div className="flex items-center gap-3">
-                    <CardTitle className="text-xl font-bold">Exception Detail</CardTitle>
-                    <Badge variant="outline" className="font-mono text-xs">{selected.record_id}</Badge>
+                    <h2 className="text-xl font-black uppercase tracking-wide text-black">Exception Detail</h2>
+                    <span className="font-mono text-xs font-bold bg-white border-2 border-black px-2 py-0.5 text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">{selected.record_id}</span>
                   </div>
-                </CardHeader>
+                </div>
                 
-                <ScrollArea className="flex-1 p-6">
-                  <div className="flex gap-6">
-                    <div className="flex-1 space-y-6">
-                      <div className="bg-background rounded-xl p-5 border border-border shadow-sm">
-                        <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
-                          <DatabaseIcon className="w-4 h-4 text-muted-foreground" />
+                <ScrollArea className="flex-1 min-h-0 p-6">
+                  <div className="flex flex-col xl:flex-row gap-6">
+                    <div className="flex-1 min-w-0 space-y-6">
+                      <div className="bg-white rounded-none p-5 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden">
+                        <h3 className="text-sm font-black text-black mb-4 flex items-center gap-2 uppercase tracking-wide">
+                          <DatabaseIcon className="w-4 h-4 text-black" />
                           Source Data
                         </h3>
                         <div className="space-y-3 text-sm">
-                          <div className="flex justify-between items-center py-2 border-b border-border/50">
-                            <span className="text-muted-foreground">Record ID</span>
-                            <span className="font-mono font-medium text-foreground">{selected.record_id}</span>
+                          <div className="flex justify-between items-center py-2 border-b-2 border-dotted border-gray-300">
+                            <span className="text-black font-bold uppercase tracking-wider text-xs">Record ID</span>
+                            <span className="font-mono font-bold text-black bg-gray-100 px-1 border border-black">{selected.record_id}</span>
                           </div>
-                          <div className="flex justify-between items-center py-2 border-b border-border/50">
-                            <span className="text-muted-foreground">Exception Code</span>
-                            <Badge variant="outline" className="font-bold text-black border-2 border-black bg-accent rounded-none">
+                          <div className="flex justify-between items-center py-2 border-b-2 border-dotted border-gray-300">
+                            <span className="text-black font-bold uppercase tracking-wider text-xs">Exception Code</span>
+                            <span className="font-bold text-black border-2 border-black bg-accent rounded-none px-2 py-0.5 text-xs uppercase tracking-wider">
                               {selected.exception_code}
-                            </Badge>
+                            </span>
                           </div>
                           <div className="pt-3">
                             <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wider font-semibold">Raw Context</p>
@@ -135,7 +145,7 @@ export default function ExceptionsPage() {
                       </div>
                     </div>
 
-                    <div className="flex-1 space-y-6">
+                    <div className="flex-1 min-w-0 space-y-6">
                       <div className="bg-white rounded-none p-5 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden">
                         
                         <h3 className="text-sm font-bold text-black mb-5 flex items-center gap-2 uppercase tracking-wide">
@@ -146,13 +156,13 @@ export default function ExceptionsPage() {
                         <div className="space-y-5 text-sm relative z-10">
                           <div>
                             <p className="text-[11px] text-muted-foreground mb-1.5 uppercase tracking-wider font-semibold">Detected Discrepancy</p>
-                            <div className="bg-white border-2 border-black border-l-8 border-l-red-500 text-black p-3.5 rounded-none leading-relaxed shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                            <div className="bg-white border-2 border-black border-t-4 border-t-red-500 text-black p-3.5 rounded-none leading-relaxed shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                               {selected.hypothesis}
                             </div>
                           </div>
                           <div>
                             <p className="text-[11px] text-muted-foreground mb-1.5 uppercase tracking-wider font-semibold">Suggested Resolution</p>
-                            <div className="bg-white border-2 border-black border-l-8 border-l-green-500 text-black p-3.5 rounded-none leading-relaxed shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                            <div className="bg-white border-2 border-black border-t-4 border-t-green-500 text-black p-3.5 rounded-none leading-relaxed shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                               {selected.suggested_resolution}
                             </div>
                           </div>
@@ -185,14 +195,14 @@ export default function ExceptionsPage() {
                     </div>
                   </div>
                 </ScrollArea>
-              </Card>
+              </div>
             </motion.div>
           ) : (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="h-full flex items-center justify-center border-2 border-dashed border-black rounded-none bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+              className="h-full flex items-center justify-center border-4 border-black rounded-none bg-gray-50 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
             >
               <div className="text-center">
                 <div className="w-16 h-16 bg-accent rounded-none flex items-center justify-center mx-auto mb-4 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">

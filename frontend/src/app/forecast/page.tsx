@@ -1,13 +1,25 @@
 "use client";
 import { useState, useEffect } from "react";
 import { getForecast } from "@/lib/api";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 export default function ForecastPage() {
   const [days, setDays] = useState(7);
   const [data, setData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    getForecast(days).then(setData).catch(() => {});
+    setIsLoading(true);
+    getForecast(days)
+      .then((data) => {
+        setData(data);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        toast.error("Failed to fetch forecast. Is the backend running?");
+        setIsLoading(false);
+      });
   }, [days]);
 
   return (
@@ -33,7 +45,13 @@ export default function ForecastPage() {
         ))}
       </div>
 
-      {data && (
+      {isLoading && (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-8 h-8 animate-spin text-black" />
+        </div>
+      )}
+
+      {!isLoading && data && (
         <>
           <div className="mb-6 flex items-center gap-3">
             <span className="text-xs font-bold uppercase tracking-wider text-black">

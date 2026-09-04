@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { qaQuery } from "@/lib/api";
+import { toast } from "sonner";
 
 export default function QAPage() {
   const [question, setQuestion] = useState("");
@@ -17,6 +18,7 @@ export default function QAPage() {
       setQuestion("");
     } catch (e) {
       console.error(e);
+      toast.error("Failed to query QA backend. Is it running?");
     }
     setLoading(false);
   };

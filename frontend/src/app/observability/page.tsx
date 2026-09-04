@@ -1,16 +1,29 @@
 "use client";
 import { useState, useEffect } from "react";
 import { getTraces, getSqlAudit, getHealth } from "@/lib/api";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 export default function ObservabilityPage() {
   const [traces, setTraces] = useState<any[]>([]);
   const [sqlAudit, setSqlAudit] = useState<any[]>([]);
   const [health, setHealth] = useState<any>(null);
 
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    getTraces().then(setTraces).catch(() => {});
-    getSqlAudit().then(setSqlAudit).catch(() => {});
-    getHealth().then(setHealth).catch(() => {});
+    setIsLoading(true);
+    Promise.all([getTraces(), getSqlAudit(), getHealth()])
+      .then(([tracesData, sqlData, healthData]) => {
+        setTraces(tracesData || []);
+        setSqlAudit(sqlData || []);
+        setHealth(healthData);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        toast.error("Failed to load observability data. Is backend running?");
+        setIsLoading(false);
+      });
   }, []);
 
   const blocked = sqlAudit.filter((e) => !e.allowed).length;
@@ -23,7 +36,13 @@ export default function ObservabilityPage() {
         OpenTelemetry traces, Jaeger, LangChain instrumentation, and SQL audit
       </p>
 
-      <div className="bg-white rounded-none p-6 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-8">
+      {isLoading ? (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-8 h-8 animate-spin text-black" />
+        </div>
+      ) : (
+        <>
+          <div className="bg-white rounded-none p-6 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-8">
         <h2 className="text-lg font-black uppercase tracking-wide text-black mb-4">Jaeger Tracing</h2>
         <a
           href="http://localhost:16686"
@@ -109,6 +128,8 @@ export default function ObservabilityPage() {
           </div>
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 }
