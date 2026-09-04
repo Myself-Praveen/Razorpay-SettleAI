@@ -89,6 +89,7 @@ async def _classify_one(
             record_context=record.to_context_dict(),
         )
 
+    few_shot_str = f"Human corrections for similar cases:\n{few_shot}" if few_shot else ""
     context = f"""
 Record ID: {PIIMasker.mask(record.id)}
 Source: {record.source.value}
@@ -101,7 +102,7 @@ Date: {record.settled_at}
 Method: {record.method}
 Description: {PIIMasker.mask(record.description) if record.description else 'None'}
 Adversarial tag: {record.adversarial_tag}
-{f"Human corrections for similar cases:\n{few_shot}" if few_shot else ""}
+{few_shot_str}
 """
 
     raw_response = None
