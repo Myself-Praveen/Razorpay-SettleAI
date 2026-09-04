@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export async function generateData(count: number = 200, adversarial: boolean = true) {
   const resp = await fetch(`${API_BASE}/api/generate-data`, {
@@ -101,7 +101,8 @@ export async function getHealth() {
 }
 
 export function connectMcpTerminal(onMessage: (data: any) => void) {
-  const ws = new WebSocket("ws://localhost:8000/ws/mcp-terminal");
+  const wsUrl = API_BASE.replace(/^http/, "ws");
+  const ws = new WebSocket(`${wsUrl}/ws/mcp-terminal`);
   ws.onmessage = (e) => onMessage(JSON.parse(e.data));
   return ws;
 }
