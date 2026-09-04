@@ -52,7 +52,7 @@ export default function PipelinePage() {
         Concurrent DAG with 5 phases and crash recovery checkpoints
       </p>
 
-      <div className="flex gap-4 mb-10">
+      <div className="flex flex-col sm:flex-row gap-4 mb-10">
         <button
           onClick={start}
           disabled={running || generating}

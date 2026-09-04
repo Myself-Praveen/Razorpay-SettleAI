@@ -16,7 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={cn("font-sans antialiased", GeistSans.variable, GeistMono.variable)}>
       <body className="bg-background text-foreground">
-        <div className="flex min-h-screen">
+        <div className="flex flex-col md:flex-row min-h-screen">
           <Sidebar />
           <main className="flex-1 overflow-auto">{children}</main>
         </div>

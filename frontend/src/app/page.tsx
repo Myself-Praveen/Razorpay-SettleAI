@@ -295,7 +295,7 @@ export default function LandingPage() {
       </section>
 
       <footer className="border-t border-border py-8 px-6 bg-background">
-        <div className="max-w-6xl mx-auto flex items-center justify-between text-[12px] text-muted-foreground">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-4 items-center justify-between text-[12px] text-muted-foreground text-center md:text-left">
           <div className="flex items-center gap-2">
             <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center overflow-hidden shadow-sm">
               <img src="/logo.png" alt="SettleAI Logo" className="w-full h-full object-cover" />
