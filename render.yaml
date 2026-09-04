@@ -2,6 +2,7 @@ services:
   - type: web
     name: settleai-backend
     env: python
+    plan: free
     # We use the python environment directly instead of Docker to easily inject Render's automatic $PORT
     buildCommand: "pip install -r requirements.txt"
     startCommand: "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
