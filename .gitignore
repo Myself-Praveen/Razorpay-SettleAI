@@ -8,3 +8,6 @@ output/
 data/
 .next/
 remove_emojis.py
+.cursor/
+.claude/
+.codex/
