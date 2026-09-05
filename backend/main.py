@@ -15,7 +15,7 @@ from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Security, HTTPException, status, Depends
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Security, HTTPException, status, Depends, UploadFile, File, Form
 from fastapi.security import APIKeyHeader
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -91,6 +91,103 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.post("/api/upload-csv", dependencies=[Depends(verify_api_key)])
+async def upload_csv(file: UploadFile = File(...)):
+    """Upload CSV and infer column mapping."""
+    from .adapters.csv_parser import infer_csv_mapping
+    content = await file.read()
+    text_content = content.decode("utf-8")
+    
+    import csv, io
+    reader = csv.reader(io.StringIO(text_content))
+    rows = list(reader)
+    if not rows:
+        raise HTTPException(status_code=400, detail="Empty CSV file")
+        
+    header = rows[0]
+    sample_rows = rows[1:6]
+    
+    mapping = await infer_csv_mapping(header, sample_rows)
+    
+    return {
+        "filename": file.filename,
+        "mapping": mapping,
+        "header": header,
+        "sample": sample_rows
+    }
+
+
+@app.post("/api/process-csv", dependencies=[Depends(verify_api_key)])
+async def process_csv(
+    file: UploadFile = File(...), 
+    mapping_json: str = Form(...)
+):
+    """Parse CSV with confirmed mapping and synthesize matches."""
+    from .adapters.csv_parser import parse_csv
+    from .models import NormalizedRecord, RecordSource, TransactionType
+    import json
+    
+    mapping = json.loads(mapping_json)
+    content = await file.read()
+    text_content = content.decode("utf-8")
+    
+    bank_records = parse_csv(text_content, mapping)
+    
+    synthetic_settlements = []
+    import random
+    from datetime import datetime
+    
+    for r in bank_records:
+        if random.random() > 0.1: # 90% chance to match
+            amount_paise = r.amount
+            synthetic_settlements.append(NormalizedRecord(
+                id=f"set_{random.randint(100000, 999999)}",
+                source=RecordSource.SETTLEMENT,
+                amount=amount_paise,
+                type=r.type,
+                settled_at=r.settled_at,
+                currency="INR",
+                method="card"
+            ))
+            
+    await db.stop_writer()
+    from pathlib import Path
+    db_path = Path("data/settleai.db")
+    if db_path.exists():
+        db_path.unlink()
+    await db.initialize()
+    
+    INSERT_SQL = (
+        "INSERT INTO normalized_records "
+        "(id, source, amount, type, debit, credit, fee, tax, "
+        "settlement_id, order_id, payment_id, settled_at, method, card_network, currency, "
+        "description, bank_utr, narration, is_adversarial, adversarial_tag) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    )
+    
+    for rec in bank_records + synthetic_settlements:
+        await db.write(
+            INSERT_SQL,
+            (rec.id, rec.source.value, rec.amount, rec.type.value, rec.debit, rec.credit,
+             rec.fee, rec.tax, rec.settlement_id, rec.order_id, rec.payment_id,
+             rec.settled_at.isoformat() if rec.settled_at else None, rec.method,
+             rec.card_network, rec.currency, rec.description, rec.bank_utr,
+             rec.narration, rec.is_adversarial, rec.adversarial_tag)
+        )
+        
+    await db.flush()
+    
+    # We must also re-initialize the tolerance engine profile
+    from .agents.exact_matcher import _load_records
+    records = await _load_records(db)
+    from .tolerance import DynamicToleranceEngine
+    engine = DynamicToleranceEngine()
+    profile = engine.analyze(records)
+    
+    return {"message": "Data ingested successfully", "bank_records": len(bank_records), "synthetic_records": len(synthetic_settlements)}
+
 
 
 
