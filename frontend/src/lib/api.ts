@@ -17,6 +17,26 @@ export async function generateData(count: number = 200, adversarial: boolean = t
   return resp.json();
 }
 
+export async function uploadCsv(formData: FormData) {
+  const resp = await fetch(`${API_BASE}/api/upload-csv`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: formData,
+  });
+  if (!resp.ok) throw new Error("Upload failed");
+  return resp.json();
+}
+
+export async function processCsv(formData: FormData) {
+  const resp = await fetch(`${API_BASE}/api/process-csv`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: formData,
+  });
+  if (!resp.ok) throw new Error("Processing failed");
+  return resp.json();
+}
+
 export async function reconcile(): Promise<any> {
   const resp = await fetch(`${API_BASE}/api/reconcile`, { method: "POST", headers: getAuthHeaders() });
   const reader = resp.body?.getReader();

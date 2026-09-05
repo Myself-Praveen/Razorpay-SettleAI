@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { Upload, FileText, CheckCircle, ArrowRight, Brain, AlertCircle, Database } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { uploadCsv, processCsv } from "@/lib/api";
 
 export default function UploadPage() {
   const router = useRouter();
@@ -45,14 +46,7 @@ export default function UploadPage() {
     formData.append("file", file);
     
     try {
-      const res = await fetch("http://localhost:8000/api/upload-csv", {
-        method: "POST",
-        body: formData,
-        // Remove Content-Type header to allow browser to set boundary
-      });
-      
-      if (!res.ok) throw new Error("Upload failed");
-      const data = await res.json();
+      const data = await uploadCsv(formData);
       setMappingResult(data);
     } catch (error) {
       console.error(error);
@@ -71,12 +65,7 @@ export default function UploadPage() {
     formData.append("mapping_json", JSON.stringify(mappingResult.mapping));
     
     try {
-      const res = await fetch("http://localhost:8000/api/process-csv", {
-        method: "POST",
-        body: formData,
-      });
-      
-      if (!res.ok) throw new Error("Processing failed");
+      await processCsv(formData);
       // Redirect to pipeline
       router.push("/pipeline");
     } catch (error) {
