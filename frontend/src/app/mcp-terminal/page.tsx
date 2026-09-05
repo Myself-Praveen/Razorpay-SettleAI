@@ -85,6 +85,7 @@ export default function McpTerminalPage() {
           )}
         </div>
       </div>
+      </div>
 
       <div className="flex gap-4 mt-6">
         <input
