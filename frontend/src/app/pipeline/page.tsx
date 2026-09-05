@@ -47,8 +47,8 @@ export default function PipelinePage() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-3xl font-black text-black uppercase tracking-tight mb-3">Reconciliation Pipeline</h1>
-      <p className="text-black bg-accent px-2 py-1 font-bold inline-block mb-10 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+      <h1 className="text-3xl font-bold text-foreground tracking-tight mb-3">Reconciliation Pipeline</h1>
+      <p className="text-primary bg-primary/10 px-3 py-1 font-medium inline-block mb-10 rounded-full text-sm border border-primary/20">
         Concurrent DAG with 5 phases and crash recovery checkpoints
       </p>
 
@@ -56,14 +56,14 @@ export default function PipelinePage() {
         <button
           onClick={start}
           disabled={running || generating}
-          className="px-6 py-3 bg-black hover:bg-accent hover:text-black text-white rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-1 hover:translate-x-1 font-bold disabled:opacity-50 transition-all uppercase tracking-widest"
+          className="px-6 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg shadow-sm hover:shadow-md font-semibold disabled:opacity-50 transition-all tracking-wide"
         >
           {running ? "Running..." : "Start Pipeline"}
         </button>
         <button
           onClick={handleGenerate}
           disabled={running || generating}
-          className="px-6 py-3 bg-white hover:bg-gray-100 text-black rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-1 hover:translate-x-1 font-bold disabled:opacity-50 transition-all uppercase tracking-widest"
+          className="px-6 py-2.5 bg-white hover:bg-gray-50 text-foreground rounded-lg border border-border shadow-sm hover:shadow-md font-semibold disabled:opacity-50 transition-all tracking-wide"
         >
           {generating ? "Generating..." : "Generate Test Data"}
         </button>
@@ -71,21 +71,21 @@ export default function PipelinePage() {
 
       <div className="space-y-5">
         {PHASES.map((phase) => (
-          <div key={phase.name} className="bg-white rounded-none p-4 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-            <div className="flex items-center justify-between mb-3">
+          <div key={phase.name} className="bg-white rounded-xl p-5 border border-border shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="font-bold text-black uppercase tracking-wide text-sm">Phase {PHASES.indexOf(phase) + 1}: {phase.name}</p>
-                <p className="text-xs text-gray-600 font-medium mt-1">{phase.desc}</p>
+                <p className="font-semibold text-foreground text-sm tracking-wide">Phase {PHASES.indexOf(phase) + 1}: {phase.name}</p>
+                <p className="text-xs text-muted-foreground mt-1">{phase.desc}</p>
               </div>
-              <span className="text-sm font-mono font-bold text-black bg-gray-100 px-2 py-1 border border-black">
+              <span className="text-sm font-mono font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-md">
                 {progress[phase.name] !== undefined
                   ? `${progress[phase.name]}%`
                   : running ? "0%" : "--"}
               </span>
             </div>
-            <div className="h-3 bg-gray-200 border-2 border-black rounded-none overflow-hidden relative">
+            <div className="h-2 bg-gray-100 rounded-full overflow-hidden relative">
               <div
-                className="h-full bg-accent border-r-2 border-black transition-all duration-500 absolute top-0 left-0"
+                className="h-full bg-primary transition-all duration-500 absolute top-0 left-0 rounded-full"
                 style={{
                   width: `${progress[phase.name] || 0}%`,
                 }}
@@ -96,23 +96,26 @@ export default function PipelinePage() {
       </div>
 
       {done && (
-        <div className="mt-10 p-6 bg-white rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col md:flex-row gap-8 items-center">
+        <div className="mt-10 p-8 bg-white rounded-2xl border border-border shadow-md flex flex-col md:flex-row gap-8 items-center">
           <div className="flex-1 w-full">
-            <p className="font-bold text-black bg-green-400 inline-block px-2 py-1 border-2 border-black mb-5 uppercase tracking-wide text-sm">
+            <p className="font-medium text-green-700 bg-green-50 inline-block px-3 py-1.5 rounded-full border border-green-200 mb-6 text-sm">
               Complete! Match rate: {(done.match_rate * 100).toFixed(1)}% | Duration: {done.duration_ms?.toFixed(0)}ms
             </p>
             <div className="flex flex-col justify-center space-y-4">
-              <div className="border-l-4 border-green-500 pl-4 py-2 bg-gray-50 border-y-2 border-r-2 border-y-black border-r-black">
-                <p className="text-black font-bold uppercase tracking-wider text-xs">Total Matches</p>
-                <p className="text-3xl font-black text-black">{done.total_matches}</p>
+              <div className="border border-border rounded-xl pl-5 py-4 bg-green-50/50 relative overflow-hidden">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-green-400"></div>
+                <p className="text-muted-foreground font-semibold tracking-wide text-xs mb-1">Total Matches</p>
+                <p className="text-3xl font-bold text-foreground">{done.total_matches}</p>
               </div>
-              <div className="border-l-4 border-yellow-500 pl-4 py-2 bg-gray-50 border-y-2 border-r-2 border-y-black border-r-black">
-                <p className="text-black font-bold uppercase tracking-wider text-xs">Total Exceptions</p>
-                <p className="text-3xl font-black text-black">{done.total_exceptions}</p>
+              <div className="border border-border rounded-xl pl-5 py-4 bg-yellow-50/50 relative overflow-hidden">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-yellow-400"></div>
+                <p className="text-muted-foreground font-semibold tracking-wide text-xs mb-1">Total Exceptions</p>
+                <p className="text-3xl font-bold text-foreground">{done.total_exceptions}</p>
               </div>
-              <div className="border-l-4 border-red-500 pl-4 py-2 bg-gray-50 border-y-2 border-r-2 border-y-black border-r-black">
-                <p className="text-black font-bold uppercase tracking-wider text-xs">Total Rejected</p>
-                <p className="text-3xl font-black text-black">{done.total_rejected}</p>
+              <div className="border border-border rounded-xl pl-5 py-4 bg-red-50/50 relative overflow-hidden">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-400"></div>
+                <p className="text-muted-foreground font-semibold tracking-wide text-xs mb-1">Total Rejected</p>
+                <p className="text-3xl font-bold text-foreground">{done.total_rejected}</p>
               </div>
             </div>
           </div>
@@ -139,10 +142,10 @@ export default function PipelinePage() {
                   <Cell fill="#f87171" />
                 </Pie>
                 <Tooltip 
-                  contentStyle={{ borderRadius: '0px', border: '2px solid black', boxShadow: '4px 4px 0px 0px rgba(0,0,0,1)', fontWeight: 'bold' }}
-                  itemStyle={{ color: 'black' }}
+                  contentStyle={{ borderRadius: '0.75rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)', fontWeight: '600' }}
+                  itemStyle={{ color: 'var(--foreground)' }}
                 />
-                <Legend iconType="square" wrapperStyle={{ fontWeight: 'bold' }} />
+                <Legend iconType="circle" wrapperStyle={{ fontWeight: '600', fontSize: '0.875rem' }} />
               </PieChart>
             </ResponsiveContainer>
           </div>

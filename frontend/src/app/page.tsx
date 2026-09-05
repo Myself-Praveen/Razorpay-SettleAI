@@ -221,7 +221,7 @@ export default function LandingPage() {
       <section id="features" className="py-24 px-6 bg-background">
         <div className="max-w-6xl mx-auto">
           <FadeInSection className="text-center mb-16">
-            <p className="text-black bg-accent inline-block px-2 py-0.5 text-[13px] font-bold tracking-wide uppercase mb-3">
+            <p className="text-black bg-yellow-400 inline-block px-2 py-0.5 text-[13px] font-bold tracking-wide uppercase mb-3">
               Capabilities
             </p>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
@@ -260,7 +260,7 @@ export default function LandingPage() {
       <section id="how-it-works" className="py-24 px-6 border-t border-border bg-card">
         <div className="max-w-4xl mx-auto">
           <FadeInSection className="text-center mb-16">
-            <p className="text-black bg-accent inline-block px-2 py-0.5 text-[13px] font-bold tracking-wide uppercase mb-3">
+            <p className="text-black bg-yellow-400 inline-block px-2 py-0.5 text-[13px] font-bold tracking-wide uppercase mb-3">
               Pipeline
             </p>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 text-card-foreground">

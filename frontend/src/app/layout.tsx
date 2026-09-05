@@ -20,9 +20,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Sidebar />
           <main className="flex-1 overflow-auto">{children}</main>
         </div>
-        <Toaster toastOptions={{
-          className: 'bg-white border-4 border-black rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] font-mono text-black font-bold',
-        }} />
+        <Toaster 
+          toastOptions={{
+            className: 'bg-white border border-border rounded-lg shadow-md font-sans text-foreground font-medium',
+          }} />
       </body>
     </html>
   );

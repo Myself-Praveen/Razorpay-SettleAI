@@ -24,8 +24,8 @@ export default function ForecastPage() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-3xl font-black text-black uppercase tracking-tight mb-3">Cash Position Forecast</h1>
-      <p className="text-black bg-accent px-2 py-1 font-bold inline-block mb-10 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+      <h1 className="text-3xl font-bold text-foreground tracking-tight mb-3">Cash Position Forecast</h1>
+      <p className="text-primary bg-primary/10 px-3 py-1 font-medium inline-block mb-10 rounded-full text-sm border border-primary/20">
         {days}-day forward projection from reconciled settlement data
       </p>
 
@@ -34,10 +34,10 @@ export default function ForecastPage() {
           <button
             key={d}
             onClick={() => setDays(d)}
-            className={`px-6 py-2 border-2 border-black rounded-none text-sm font-bold uppercase tracking-wider transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none ${
+            className={`px-6 py-2 border rounded-full text-sm font-semibold transition-all shadow-sm hover:shadow-md ${
               days === d
-                ? "bg-black text-white"
-                : "bg-white text-black hover:bg-gray-100"
+                ? "bg-foreground text-background border-transparent"
+                : "bg-white text-foreground hover:bg-muted/50 border-border"
             }`}
           >
             {d} days
@@ -54,15 +54,15 @@ export default function ForecastPage() {
       {!isLoading && data && (
         <>
           <div className="mb-6 flex items-center gap-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-black">
+            <span className="text-xs font-semibold tracking-wider text-muted-foreground">
               Overall confidence
             </span>
-            <span className={`text-xs font-black uppercase px-2 py-0.5 border-2 border-black ${
+            <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-md border ${
               data.overall_confidence === "high"
-                ? "bg-green-400 text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                ? "bg-green-50 text-green-700 border-green-200"
                 : data.overall_confidence === "medium"
-                ? "bg-accent text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-                : "bg-red-500 text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                ? "bg-yellow-50 text-yellow-700 border-yellow-200"
+                : "bg-red-50 text-red-700 border-red-200"
             }`}>
               {data.overall_confidence}
             </span>
@@ -72,14 +72,14 @@ export default function ForecastPage() {
             {data.days?.map((day: any) => (
               <div
                 key={day.date}
-                className="flex items-center gap-4 p-3 bg-white rounded-none border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                className="flex items-center gap-4 p-4 bg-white rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow"
               >
-                <span className="text-xs text-black w-24 font-mono font-bold bg-gray-100 border border-black px-1 text-center py-0.5">{day.date}</span>
+                <span className="text-xs text-muted-foreground w-24 font-mono font-semibold bg-muted/50 border border-border/50 rounded px-1.5 text-center py-1">{day.date}</span>
                 <div className="flex-1">
-                  <div className="h-4 bg-gray-200 border border-black rounded-none overflow-hidden relative">
+                  <div className="h-2.5 bg-muted/40 rounded-full overflow-hidden relative">
                     <div
-                      className={`h-full absolute left-0 top-0 border-r border-black ${
-                        day.projected_flow < 0 ? "bg-red-500" : "bg-green-400"
+                      className={`h-full absolute left-0 top-0 rounded-full ${
+                        day.projected_flow < 0 ? "bg-red-400" : "bg-green-500"
                       }`}
                       style={{
                         width: `${Math.min(
@@ -90,15 +90,15 @@ export default function ForecastPage() {
                     />
                   </div>
                 </div>
-                <span className="text-sm font-black text-black w-40 text-right">
+                <span className="text-sm font-semibold text-foreground w-40 text-right">
                   {day.projected_flow < 0 ? "-" : ""}Rs.{Math.abs(day.projected_flow).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                 </span>
-                <span className={`text-[10px] font-black uppercase tracking-wider w-16 text-center border-2 border-black px-1 ${
+                <span className={`text-[10px] font-semibold uppercase tracking-wider w-16 text-center rounded-md border px-1 ${
                   day.confidence === "high"
-                    ? "bg-green-400 text-black"
+                    ? "bg-green-50 text-green-700 border-green-200"
                     : day.confidence === "medium"
-                    ? "bg-accent text-black"
-                    : "bg-red-500 text-white"
+                    ? "bg-yellow-50 text-yellow-700 border-yellow-200"
+                    : "bg-red-50 text-red-700 border-red-200"
                 }`}>
                   {day.confidence}
                 </span>
@@ -106,27 +106,27 @@ export default function ForecastPage() {
             ))}
           </div>
 
-          <div className="bg-white rounded-none p-6 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative">
-            <div className="absolute top-0 right-0 border-b-2 border-l-2 border-black bg-accent px-3 py-1 font-bold text-xs uppercase tracking-widest">Insights</div>
-            <h2 className="text-lg font-black uppercase tracking-wide text-black mb-6">Summary</h2>
+          <div className="bg-white rounded-2xl p-8 border border-border shadow-md relative overflow-hidden">
+            <div className="absolute top-0 right-0 border-b border-l border-border bg-muted/30 px-3 py-1 font-semibold text-xs text-muted-foreground rounded-bl-lg">Insights</div>
+            <h2 className="text-lg font-semibold tracking-wide text-foreground mb-6">Summary</h2>
             <div className="grid grid-cols-3 gap-6">
-              <div className="text-center border-t-4 border-black pt-3">
-                <p className="text-2xl font-black text-black">
+              <div className="text-center border-t-2 border-border pt-4">
+                <p className="text-2xl font-bold text-foreground">
                   Rs.{data.projected_position?.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                 </p>
-                <p className="text-xs font-bold text-black uppercase tracking-wider mt-2">Projected Position ({days}d)</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mt-2">Projected Position ({days}d)</p>
               </div>
-              <div className="text-center border-t-4 border-black pt-3">
-                <p className="text-2xl font-black text-black">
+              <div className="text-center border-t-2 border-border pt-4">
+                <p className="text-2xl font-bold text-foreground">
                   Rs.{data.tomorrows_flow?.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                 </p>
-                <p className="text-xs font-bold text-black uppercase tracking-wider mt-2">Tomorrow&apos;s Flow</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mt-2">Tomorrow&apos;s Flow</p>
               </div>
-              <div className="text-center border-t-4 border-green-500 pt-3">
-                <p className="text-2xl font-black text-black">
+              <div className="text-center border-t-2 border-green-500 pt-4">
+                <p className="text-2xl font-bold text-foreground">
                   {data.high_confidence_days}/{days}
                 </p>
-                <p className="text-xs font-bold text-black uppercase tracking-wider mt-2">High Confidence Days</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mt-2">High Confidence Days</p>
               </div>
             </div>
           </div>

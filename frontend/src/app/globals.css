@@ -8,6 +8,7 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #F8FAFC; /* sleek light background */
 }
 
 @layer utilities {
@@ -23,34 +24,34 @@ body {
     --font-mono: var(--font-geist-mono);
   }
   :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0 0 0);
+    --background: oklch(0.98 0 0); /* Soft white/gray */
+    --foreground: oklch(0.1 0 0);
     --card: oklch(1 0 0);
-    --card-foreground: oklch(0 0 0);
+    --card-foreground: oklch(0.1 0 0);
     --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0 0 0);
-    --primary: oklch(0 0 0);
+    --popover-foreground: oklch(0.1 0 0);
+    --primary: oklch(0.6 0.15 250); /* Fintech Blue */
     --primary-foreground: oklch(1 0 0);
-    --secondary: oklch(0.96 0 0);
-    --secondary-foreground: oklch(0 0 0);
+    --secondary: oklch(0.96 0 250); /* Light Blue Gray */
+    --secondary-foreground: oklch(0.2 0 250);
     --muted: oklch(0.96 0 0);
     --muted-foreground: oklch(0.4 0 0);
-    --accent: oklch(0.9 0.2 100); /* Yellow */
-    --accent-foreground: oklch(0 0 0);
+    --accent: oklch(0.95 0.05 250); /* Light Blue Accent */
+    --accent-foreground: oklch(0.3 0.1 250);
     --destructive: oklch(0.6 0.25 25); /* Red */
     --destructive-foreground: oklch(1 0 0);
-    --border: oklch(0 0 0);
-    --input: oklch(0 0 0);
-    --ring: oklch(0 0 0);
-    --radius: 0rem;
+    --border: oklch(0.92 0 0);
+    --input: oklch(0.92 0 0);
+    --ring: oklch(0.6 0.15 250);
+    --radius: 0.75rem; /* Sleek rounded corners */
     --sidebar: oklch(1 0 0);
-    --sidebar-foreground: oklch(0 0 0);
-    --sidebar-primary: oklch(0 0 0);
+    --sidebar-foreground: oklch(0.1 0 0);
+    --sidebar-primary: oklch(0.6 0.15 250);
     --sidebar-primary-foreground: oklch(1 0 0);
-    --sidebar-accent: oklch(0.96 0 0);
-    --sidebar-accent-foreground: oklch(0 0 0);
-    --sidebar-border: oklch(0 0 0);
-    --sidebar-ring: oklch(0 0 0);
+    --sidebar-accent: oklch(0.96 0 250);
+    --sidebar-accent-foreground: oklch(0.2 0 250);
+    --sidebar-border: oklch(0.92 0 0);
+    --sidebar-ring: oklch(0.6 0.15 250);
   }
   * {
     @apply border-border;

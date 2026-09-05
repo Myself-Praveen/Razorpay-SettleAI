@@ -43,11 +43,15 @@ export default function ExceptionsPage() {
 
   return (
     <div className="flex gap-6 h-[calc(100vh-4rem)] p-6 bg-background">
-      <div className="w-96 shrink-0 flex flex-col bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none">
-        <div className="border-b-2 border-black p-4 bg-accent">
-          <h2 className="text-2xl font-black uppercase tracking-wide text-black">Exception Explorer</h2>
-          <p className="text-xs text-black font-bold mt-1 uppercase tracking-wider">
-            {activeExceptions.length} exceptions requiring human review
+      <div className="w-96 shrink-0 flex flex-col bg-white border border-border shadow-sm rounded-2xl overflow-hidden">
+        <div className="border-b border-border p-5 bg-muted/20 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
+          <div className="flex items-center justify-between mb-1">
+            <h2 className="text-xl font-bold tracking-tight text-foreground">Honest Exception List</h2>
+            <span className="bg-primary/10 text-primary text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full border border-primary/20">Action Required</span>
+          </div>
+          <p className="text-xs text-muted-foreground font-medium">
+            {activeExceptions.length} unresolved exceptions passed through the AI pipeline
           </p>
         </div>
         <ScrollArea className="flex-1 min-h-0 p-4">
@@ -64,23 +68,23 @@ export default function ExceptionsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   onClick={() => setSelected(exc)}
-                  className={`w-full text-left p-4 rounded-none border-2 transition-all duration-200 outline-none ${
+                  className={`w-full text-left p-4 rounded-xl border transition-all duration-200 outline-none ${
                     selected?.exception_id === exc.exception_id
-                      ? "border-black bg-accent text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] -translate-y-1"
-                      : "border-black bg-white hover:bg-gray-100 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1"
+                      ? "border-primary bg-primary/5 shadow-sm -translate-y-0.5"
+                      : "border-transparent bg-white hover:border-border hover:bg-muted/30 hover:shadow-sm hover:-translate-y-0.5"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-mono font-medium text-foreground truncate max-w-[180px]">
                       {exc.exception_id}
                     </span>
-                    <span className="inline-block px-1 bg-gray-100 text-[10px] uppercase font-bold tracking-wider rounded-none border-2 border-black">
+                    <span className="inline-block px-2 py-0.5 bg-muted text-[10px] uppercase font-semibold tracking-wider rounded-md border border-border">
                       {exc.confidence_level}
                     </span>
                   </div>
-                  <div className="flex items-center gap-1.5 mb-1.5">
-                    <AlertCircle className="w-3.5 h-3.5 text-black" />
-                    <span className="text-xs font-black uppercase tracking-wider text-black bg-accent px-1 border border-black">{exc.exception_code}</span>
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <AlertCircle className="w-4 h-4 text-primary" />
+                    <span className="text-[11px] font-semibold tracking-wide text-primary bg-primary/10 px-2 py-0.5 rounded-full">{exc.exception_code}</span>
                   </div>
                   <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                     {exc.hypothesis}
@@ -108,36 +112,36 @@ export default function ExceptionsPage() {
               exit={{ opacity: 0, y: -20 }}
               className="h-full"
             >
-              <div className="h-full flex flex-col bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none">
-                <div className="border-b-2 border-black p-4 bg-accent">
+              <div className="h-full flex flex-col bg-white border border-border shadow-sm rounded-2xl overflow-hidden">
+                <div className="border-b border-border p-5 bg-white">
                   <div className="flex items-center gap-3">
-                    <h2 className="text-xl font-black uppercase tracking-wide text-black">Exception Detail</h2>
-                    <span className="font-mono text-xs font-bold bg-white border-2 border-black px-2 py-0.5 text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">{selected.record_id}</span>
+                    <h2 className="text-xl font-bold tracking-tight text-foreground">Exception Detail</h2>
+                    <span className="font-mono text-xs font-semibold bg-muted px-2 py-1 rounded-md text-muted-foreground border border-border">{selected.record_id}</span>
                   </div>
                 </div>
                 
                 <ScrollArea className="flex-1 min-h-0 p-6">
                   <div className="flex flex-col xl:flex-row gap-6">
                     <div className="flex-1 min-w-0 space-y-6">
-                      <div className="bg-white rounded-none p-5 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden">
-                        <h3 className="text-sm font-black text-black mb-4 flex items-center gap-2 uppercase tracking-wide">
-                          <DatabaseIcon className="w-4 h-4 text-black" />
+                      <div className="bg-white rounded-xl p-6 border border-border shadow-sm relative overflow-hidden">
+                        <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
+                          <DatabaseIcon className="w-4 h-4 text-primary" />
                           Source Data
                         </h3>
-                        <div className="space-y-3 text-sm">
-                          <div className="flex justify-between items-center py-2 border-b-2 border-dotted border-gray-300">
-                            <span className="text-black font-bold uppercase tracking-wider text-xs">Record ID</span>
-                            <span className="font-mono font-bold text-black bg-gray-100 px-1 border border-black">{selected.record_id}</span>
+                        <div className="space-y-4 text-sm">
+                          <div className="flex justify-between items-center py-3 border-b border-border/60">
+                            <span className="text-muted-foreground font-medium text-xs">Record ID</span>
+                            <span className="font-mono font-medium text-foreground bg-muted/50 px-2 py-1 rounded-md border border-border/50">{selected.record_id}</span>
                           </div>
-                          <div className="flex justify-between items-center py-2 border-b-2 border-dotted border-gray-300">
-                            <span className="text-black font-bold uppercase tracking-wider text-xs">Exception Code</span>
-                            <span className="font-bold text-black border-2 border-black bg-accent rounded-none px-2 py-0.5 text-xs uppercase tracking-wider">
+                          <div className="flex justify-between items-center py-3 border-b border-border/60">
+                            <span className="text-muted-foreground font-medium text-xs">Exception Code</span>
+                            <span className="font-semibold text-primary bg-primary/10 rounded-md px-2.5 py-1 text-xs">
                               {selected.exception_code}
                             </span>
                           </div>
-                          <div className="pt-3">
-                            <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wider font-semibold">Raw Context</p>
-                            <pre className="bg-gray-100 p-4 rounded-none text-xs font-mono text-black overflow-x-auto border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                          <div className="pt-4">
+                            <p className="text-xs text-muted-foreground mb-2 font-medium">Raw Context</p>
+                            <pre className="bg-muted/30 p-4 rounded-lg text-[11px] font-mono text-foreground overflow-x-auto border border-border/50">
                               {JSON.stringify(selected, null, 2)}
                             </pre>
                           </div>
@@ -146,49 +150,49 @@ export default function ExceptionsPage() {
                     </div>
 
                     <div className="flex-1 min-w-0 space-y-6">
-                      <div className="bg-white rounded-none p-5 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden">
+                      <div className="bg-white rounded-xl p-6 border border-border shadow-sm relative overflow-hidden">
                         
-                        <h3 className="text-sm font-bold text-black mb-5 flex items-center gap-2 uppercase tracking-wide">
-                          <CpuIcon className="w-4 h-4" />
+                        <h3 className="text-sm font-semibold text-foreground mb-6 flex items-center gap-2">
+                          <CpuIcon className="w-4 h-4 text-primary" />
                           AI Auditor Hypothesis
                         </h3>
                         
-                        <div className="space-y-5 text-sm relative z-10">
+                        <div className="space-y-6 text-sm relative z-10">
                           <div>
-                            <p className="text-[11px] text-muted-foreground mb-1.5 uppercase tracking-wider font-semibold">Detected Discrepancy</p>
-                            <div className="bg-white border-2 border-black border-t-4 border-t-red-500 text-black p-3.5 rounded-none leading-relaxed shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                            <p className="text-[11px] text-muted-foreground mb-2 font-medium">Detected Discrepancy</p>
+                            <div className="bg-white border border-border border-l-4 border-l-orange-400 text-foreground p-4 rounded-r-xl leading-relaxed shadow-sm">
                               {selected.hypothesis}
                             </div>
                           </div>
                           <div>
-                            <p className="text-[11px] text-muted-foreground mb-1.5 uppercase tracking-wider font-semibold">Suggested Resolution</p>
-                            <div className="bg-white border-2 border-black border-t-4 border-t-green-500 text-black p-3.5 rounded-none leading-relaxed shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                            <p className="text-[11px] text-muted-foreground mb-2 font-medium">Suggested Resolution</p>
+                            <div className="bg-white border border-border border-l-4 border-l-green-400 text-foreground p-4 rounded-r-xl leading-relaxed shadow-sm">
                               {selected.suggested_resolution}
                             </div>
                           </div>
                         </div>
 
-                        <div className="mt-8 pt-5 border-t-2 border-black relative z-10">
-                          <p className="text-xs bg-accent text-black inline-block px-1 py-0.5 mb-3 font-bold uppercase">Human-In-The-Loop Action</p>
-                          <div className="flex gap-3">
+                        <div className="mt-8 pt-6 border-t border-border/60 relative z-10">
+                          <p className="text-xs text-muted-foreground mb-4 font-medium">Human-In-The-Loop Action</p>
+                          <div className="flex gap-4">
                             <Button
                               onClick={() => handleResolve("accepted_as_is")}
-                              className="flex-1 bg-green-500 hover:bg-green-400 text-black font-bold rounded-none border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-[2px] hover:translate-x-[2px] transition-all gap-2"
+                              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg shadow-sm hover:shadow-md transition-all gap-2"
                             >
                               <CheckCircle2 className="w-4 h-4" />
                               Accept Hypothesis
                             </Button>
                             <Button
                               onClick={() => handleResolve("manual_override")}
-                              variant="destructive"
-                              className="flex-1 bg-red-500 hover:bg-red-400 text-white font-bold rounded-none border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-[2px] hover:translate-x-[2px] transition-all gap-2"
+                              variant="outline"
+                              className="flex-1 bg-white hover:bg-red-50 text-red-600 hover:text-red-700 border-red-200 hover:border-red-300 font-semibold rounded-lg shadow-sm hover:shadow-md transition-all gap-2"
                             >
                               <XCircle className="w-4 h-4" />
                               Reject & Override
                             </Button>
                           </div>
-                          <p className="text-[10px] text-muted-foreground mt-4 text-center font-medium">
-                            Actions update <code className="font-mono text-black bg-gray-200 px-1 border border-black py-0.5">few_shot_memory.json</code> to train future runs.
+                          <p className="text-[11px] text-muted-foreground mt-5 text-center">
+                            Actions update <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">few_shot_memory.json</code> to train future runs.
                           </p>
                         </div>
                       </div>
@@ -202,14 +206,14 @@ export default function ExceptionsPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="h-full flex items-center justify-center border-4 border-black rounded-none bg-gray-50 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+              className="h-full flex items-center justify-center border border-border border-dashed rounded-2xl bg-muted/10"
             >
               <div className="text-center">
-                <div className="w-16 h-16 bg-accent rounded-none flex items-center justify-center mx-auto mb-4 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                  <AlertCircle className="w-8 h-8 text-black" />
+                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 border border-border shadow-sm">
+                  <AlertCircle className="w-8 h-8 text-muted-foreground/50" />
                 </div>
-                <h3 className="text-lg font-medium text-foreground mb-1">No Exception Selected</h3>
-                <p className="text-sm text-muted-foreground">Select an exception from the explorer to view its analysis.</p>
+                <h3 className="text-lg font-semibold text-foreground mb-1">No Exception Selected</h3>
+                <p className="text-sm text-muted-foreground">Select an honest exception from the queue to view its analysis.</p>
               </div>
             </motion.div>
           )}
