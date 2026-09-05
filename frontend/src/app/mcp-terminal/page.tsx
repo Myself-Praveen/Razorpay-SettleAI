@@ -43,12 +43,23 @@ export default function McpTerminalPage() {
         <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">{connected ? "Connected" : "Disconnected"}</span>
       </div>
 
-      <div
-        ref={terminalRef}
-        className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl shadow-lg p-6 overflow-auto font-mono text-xs relative"
-      >
-        <div className="absolute top-0 right-0 border-b border-l border-zinc-800 bg-zinc-900 px-3 py-1 font-medium text-[10px] uppercase tracking-widest text-zinc-400 rounded-bl-lg">Terminal</div>
-        <div className="mt-2">
+      <div className="flex-1 flex flex-col bg-[#1c1c1e] border border-zinc-800/80 rounded-xl shadow-2xl overflow-hidden relative">
+        <div className="h-10 bg-[#2d2d2f] flex items-center px-4 border-b border-zinc-800/50 flex-shrink-0 relative">
+          <div className="flex gap-2 z-10">
+            <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
+            <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+            <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <span className="text-[11px] font-semibold text-zinc-400 font-sans tracking-wide">mcp-terminal — zsh</span>
+          </div>
+        </div>
+
+        <div
+          ref={terminalRef}
+          className="flex-1 p-6 overflow-auto font-mono text-xs bg-[#1c1c1e]"
+        >
+          <div className="mt-0">
           {messages.length === 0 ? (
             <p className="text-zinc-500 italic">Waiting for MCP tool calls...</p>
           ) : (
